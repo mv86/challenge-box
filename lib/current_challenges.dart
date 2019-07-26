@@ -27,11 +27,14 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index) {
                 var challenge = snapshot.data[index];
-                return ListTile(
-                  title: Text(challenge.name, style: TextStyle(fontSize: 32.0)),
-                  subtitle: Text(challenge.stats(), style: TextStyle(fontSize: 18.0)),
-                  trailing: challenge.failed ? Icon(Icons.error, color: Colors.red) : null,
-                  onTap: () => challenge.failed ? _showRestartDialog(context, challenge) : _showFailedDialog(context, challenge),
+                return Container (
+                  color: (index % 2 == 0 ) ? Colors.grey[800] : Colors.grey[850],
+                  child: ListTile(
+                    title: Text(challenge.name, style: TextStyle(fontSize: 28.0)),
+                    subtitle: Text(challenge.stats(), style: TextStyle(fontSize: 18.0)),
+                    trailing: challenge.failed ? Icon(Icons.error, color: Colors.red) : null,
+                    onTap: () => challenge.failed ? _showRestartDialog(context, challenge) : _showFailedDialog(context, challenge),
+                  )
                 );
               },
             );
