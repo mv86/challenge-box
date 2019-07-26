@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 import 'package:challenge_box/db/database_helper.dart';
 
-
 class CreateChallengePage extends StatefulWidget {
   CreateChallengePage({Key key, @required this.title}) : super(key: key);
 
@@ -11,7 +10,6 @@ class CreateChallengePage extends StatefulWidget {
    @override
   _CreateChallengePageState createState() => _CreateChallengePageState();
 }
-
 
 class _CreateChallengePageState extends State<CreateChallengePage> {
   final _formKey = GlobalKey<FormState>();

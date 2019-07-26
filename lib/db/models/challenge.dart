@@ -22,11 +22,19 @@ class Challenge {
       columnName: name,
       columnStartDate: startDate.millisecondsSinceEpoch,
       columnLongestDuration: longestDuration,
-      columnFailed: failed,
+      columnFailed: failed ? 1 : 0,
     };
     if (id != null) {
       map[columnId] = id;
     }
     return map;
   }
+
+  daysCompleted() {
+    return DateTime.now().difference(startDate).inDays;
+  }
+
+  stats() {
+    return'Completed: ${daysCompleted()} days\nLongest duration: $longestDuration days';
+  } 
 }

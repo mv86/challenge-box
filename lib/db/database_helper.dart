@@ -5,7 +5,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:challenge_box/db/db_constants.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 
-
 class DatabaseHelper {
   static final _databaseName = "ChallengeBox.db";
   static final _databaseVersion = 2;
@@ -61,7 +60,8 @@ class DatabaseHelper {
     List<Map> maps = await db.query(tableChallenges,
         columns: [columnId, columnName, columnStartDate, columnLongestDuration, columnFailed],
         where: '$columnId = ?',
-        whereArgs: [id]);
+        whereArgs: [id],
+    );
     if (maps.length > 0) {
       return Challenge.fromMap(maps.first);
     }
@@ -82,5 +82,14 @@ class DatabaseHelper {
     }
     return challengeMaps;
   }
-  // TODO: delete && update
+
+  updateChallenge(Challenge challenge) async {
+    Database db = await database;
+    await db.update(tableChallenges, challenge.toMap(), where: "$columnId = ?", whereArgs: [challenge.id]);
+  }
+  
+  deleteChallenge(Challenge challenge) async {
+    Database db = await database;
+    await db.delete(tableChallenges, where: '$columnId = ?', whereArgs: [challenge.id]);
+  }
 }
