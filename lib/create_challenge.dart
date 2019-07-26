@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:challenge_box/database_helpers.dart';
+import 'package:challenge_box/db/models/challenge.dart';
+import 'package:challenge_box/db/database_helper.dart';
+
 
 class CreateChallengePage extends StatefulWidget {
   CreateChallengePage({Key key, @required this.title}) : super(key: key);
@@ -9,6 +11,7 @@ class CreateChallengePage extends StatefulWidget {
    @override
   _CreateChallengePageState createState() => _CreateChallengePageState();
 }
+
 
 class _CreateChallengePageState extends State<CreateChallengePage> {
   final _formKey = GlobalKey<FormState>();
@@ -55,11 +58,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: RaisedButton(
                       onPressed: () {
-                        print('boom');
                         if (_formKey.currentState.validate()) {
-                          print('bam');
-                          print(_challengeName);
-                          print(_startDate);
                           _formKey.currentState.save();
                           _saveChallenge(_challengeName, _startDate);
                         }
@@ -87,17 +86,16 @@ _saveChallenge(name, startDate) async {
 }
 
 _validFormat(date) {
-  List<String> dateComponents = date.split('/');
+  RegExp nonDigit = RegExp(r'\D');
+  List<String> dateComponents = date.split(nonDigit);
   return dateComponents[2] + dateComponents[1] + dateComponents[0];
 }
 
 _validDate(date) {
   RegExp reDate = RegExp(r'\d{2}\W\d{2}\W\d{4}');
-
   if (date.length == 10 && reDate.hasMatch(date)) {
     // TODO Add checks for day month etc
     return true;
   }
-
   return false;
 }
