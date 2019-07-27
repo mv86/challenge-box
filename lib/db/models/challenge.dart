@@ -1,4 +1,5 @@
 import 'package:challenge_box/db/db_constants.dart';
+import 'package:challenge_box/db/database_helper.dart';
 import 'package:recase/recase.dart';
 
 class Challenge {
@@ -8,7 +9,7 @@ class Challenge {
   int longestDuration = 0;
   bool failed = false;
 
-  Challenge();
+  Challenge(this.name, this.startDate);
 
   Challenge.fromMap(Map<String, dynamic> map) {
     ReCase rc = ReCase(map[columnName]);
@@ -34,6 +35,31 @@ class Challenge {
 
   daysCompleted() {
     return DateTime.now().difference(startDate).inDays;
+  }
+
+  save() {
+   DatabaseHelper.instance.insert(this);
+  }
+
+  fail() {
+    failed = true;
+    if (daysCompleted() > longestDuration) {
+      longestDuration = daysCompleted();
+    }
+    startDate = DateTime.now();
+
+    DatabaseHelper.instance.updateChallenge(this);
+  }
+
+  restart() {
+    failed = false;
+    startDate = DateTime.now();
+
+    DatabaseHelper.instance.updateChallenge(this);
+  }
+
+  delete() {
+    DatabaseHelper.instance.deleteChallenge(this);
   }
 
   stats() {

@@ -30,8 +30,14 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
                 return Container (
                   color: (index % 2 == 0 ) ? Colors.grey[800] : Colors.grey[850],
                   child: ListTile(
-                    title: Text(challenge.name, style: TextStyle(fontSize: 28.0)),
-                    subtitle: Text(challenge.stats(), style: TextStyle(fontSize: 18.0)),
+                    title: Text(
+                      challenge.name, 
+                      style: TextStyle(fontSize: 28.0)
+                    ),
+                    subtitle: Text(
+                      challenge.stats(), 
+                      style: TextStyle(fontSize: 18.0)
+                    ),
                     trailing: challenge.failed ? Icon(Icons.error, color: Colors.red) : null,
                     onTap: () => challenge.failed ? _showRestartDialog(context, challenge) : _showFailedDialog(context, challenge),
                   )
@@ -57,7 +63,6 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
         onPressed: () {
            Navigator.of(context).pushNamed('/createChallenge');
         },
-        tooltip: 'Increment',
         icon: Icon(Icons.add),
         label: Text('Create New Challenge')
       ),
@@ -77,8 +82,7 @@ _showFailedDialog(context, challenge) {
             FlatButton(
               child: Text('Yes'),
               onPressed: () {
-                _failChallenge(challenge);
-
+                challenge.fail();
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, '/');
               },
@@ -106,8 +110,7 @@ _showRestartDialog(context, challenge) {
             FlatButton(
               child: Text('Restart'),
               onPressed: () {
-                _restartChallenge(challenge);
-
+                challenge.restart();
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, '/');
               },
@@ -115,7 +118,7 @@ _showRestartDialog(context, challenge) {
             FlatButton(
               child: Text('Delete'),
               onPressed: () async {
-                await DatabaseHelper.instance.deleteChallenge(challenge);
+                challenge.delete();
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, '/');
               },
@@ -125,20 +128,3 @@ _showRestartDialog(context, challenge) {
       },
     );
   }
-
-_failChallenge(challenge) async {
-  challenge.failed = true;
-  if (challenge.daysCompleted() > challenge.longestDuration) {
-    challenge.longestDuration = challenge.daysCompleted();
-  }
-  challenge.startDate = DateTime.now();
-
-  await DatabaseHelper.instance.updateChallenge(challenge);
-}
-
-_restartChallenge(challenge) async {
-  challenge.failed = false;
-  challenge.startDate = DateTime.now();
-
-  await DatabaseHelper.instance.updateChallenge(challenge);
-}
