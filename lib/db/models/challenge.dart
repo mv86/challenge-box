@@ -1,6 +1,5 @@
 import 'package:challenge_box/db/db_constants.dart';
 import 'package:challenge_box/db/database_helper.dart';
-import 'package:recase/recase.dart';
 
 class Challenge {
   int id;
@@ -12,9 +11,8 @@ class Challenge {
   Challenge(this.name, this.startDate);
 
   Challenge.fromMap(Map<String, dynamic> map) {
-    ReCase rc = ReCase(map[columnName]);
     id = map[columnId];
-    name = rc.titleCase;
+    name = map[columnName];
     startDate = DateTime.fromMillisecondsSinceEpoch(map[columnStartDate]);
     longestDuration = map[columnLongestDuration];
     failed = (map[columnFailed] == 0) ? false : true;

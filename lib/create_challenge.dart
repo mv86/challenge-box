@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 import 'package:intl/intl.dart';
+import 'package:recase/recase.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 class CreateChallengePage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                   hintText: 'E.g Quit Alcohol',
                 ),
                 validator: (input) => input.length < 1 ? 'You must choose a challenge name' : null,
-                onSaved: (input) => _challengeName = input,
+                onSaved: (input) => _challengeName = ReCase(input).titleCase,
                ),
               DateTimeField(
                 controller: _startDateController,
@@ -74,7 +75,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                               challenge.save();
                               Scaffold.of(context).showSnackBar(SnackBar(
                                 content: Text(
-                                  '$_challengeName saved', 
+                                  '$_challengeName Created', 
                                   style: TextStyle(fontSize: 18.0, color: Colors.teal[100])
                                 ),
                               ));
