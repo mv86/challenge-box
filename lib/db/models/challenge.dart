@@ -1,11 +1,10 @@
 import 'package:challenge_box/db/db_constants.dart';
-import 'package:challenge_box/db/database_helper.dart';
 
 class Challenge {
   int id;
   String name;
   DateTime startDate;
-  int longestDuration = 0;
+  int longestDurationDays = 0;
   bool failed = false;
 
   Challenge(this.name, this.startDate);
@@ -14,7 +13,7 @@ class Challenge {
     id = map[columnId];
     name = map[columnName];
     startDate = DateTime.fromMillisecondsSinceEpoch(map[columnStartDate]);
-    longestDuration = map[columnLongestDuration];
+    longestDurationDays = map[columnLongestDuration];
     failed = (map[columnFailed] == 0) ? false : true;
   }
 
@@ -22,7 +21,7 @@ class Challenge {
     var map = <String, dynamic>{
       columnName: name,
       columnStartDate: startDate.millisecondsSinceEpoch,
-      columnLongestDuration: longestDuration,
+      columnLongestDuration: longestDurationDays,
       columnFailed: failed ? 1 : 0,
     };
     if (id != null) {
@@ -32,35 +31,36 @@ class Challenge {
   }
 
   daysCompleted() {
+    if (failed) return 0;
     return DateTime.now().difference(startDate).inDays;
   }
 
-  save() {
-   DatabaseHelper.instance.insert(this);
-  }
-
   fail() {
-    failed = true;
-    if (daysCompleted() > longestDuration) {
-      longestDuration = daysCompleted();
+    if (daysCompleted() > longestDurationDays) {
+      longestDurationDays = daysCompleted();
     }
-    startDate = DateTime.now();
-
-    DatabaseHelper.instance.updateChallenge(this);
+    failed = true;
   }
 
   restart() {
     failed = false;
     startDate = DateTime.now();
-
-    DatabaseHelper.instance.updateChallenge(this);
-  }
-
-  delete() {
-    DatabaseHelper.instance.deleteChallenge(this);
   }
 
   stats() {
-    return'Completed: ${daysCompleted()} days\nLongest duration: $longestDuration days';
+    String daysCompletedStats;
+    String longestDurationDaysStats;
+
+    if (failed) {
+      daysCompletedStats = 'Marked as failed!';
+    } else {
+      daysCompletedStats = 'Completed: ${daysCompleted()} day';
+      if (daysCompleted() != 1) daysCompletedStats += 's';
+    }
+
+    longestDurationDaysStats = 'Longest duration: $longestDurationDays day';
+    if (longestDurationDays != 1) longestDurationDaysStats += 's';
+    
+    return'$daysCompletedStats\n$longestDurationDaysStats';
   } 
 }

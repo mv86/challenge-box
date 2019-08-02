@@ -49,7 +49,7 @@ class DatabaseHelper {
     // await db.execute('TODO');
   }
 
-  Future<int> insert(Challenge challenge) async {
+  Future<int> insertChallenge(Challenge challenge) async {
     Database db = await database;
     int id = await db.insert(tableChallenges, challenge.toMap());
     return id;

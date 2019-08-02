@@ -83,6 +83,7 @@ _showFailedDialog(context, challenge) {
               child: Text('Yes'),
               onPressed: () {
                 challenge.fail();
+                DatabaseHelper.instance.updateChallenge(challenge);
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, '/');
               },
@@ -111,14 +112,15 @@ _showRestartDialog(context, challenge) {
               child: Text('Restart'),
               onPressed: () {
                 challenge.restart();
+                DatabaseHelper.instance.updateChallenge(challenge);
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, '/');
               },
             ),
             FlatButton(
               child: Text('Delete'),
-              onPressed: () async {
-                challenge.delete();
+              onPressed: () {
+                DatabaseHelper.instance.deleteChallenge(challenge);
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, '/');
               },

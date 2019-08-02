@@ -3,6 +3,7 @@ import 'package:challenge_box/db/models/challenge.dart';
 import 'package:intl/intl.dart';
 import 'package:recase/recase.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:challenge_box/db/database_helper.dart';
 
 class CreateChallengePage extends StatefulWidget {
   CreateChallengePage({Key key, @required this.title}) : super(key: key);
@@ -12,6 +13,8 @@ class CreateChallengePage extends StatefulWidget {
    @override
   _CreateChallengePageState createState() => _CreateChallengePageState();
 }
+
+// TODO Research using setState here
 
 class _CreateChallengePageState extends State<CreateChallengePage> {
   final _formKey = GlobalKey<FormState>();
@@ -42,7 +45,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                   hintText: 'E.g Quit Alcohol',
                 ),
                 validator: (input) => input.length < 1 ? 'You must choose a challenge name' : null,
-                onSaved: (input) => _challengeName = ReCase(input).titleCase,
+                onSaved: (input) => _challengeName = ReCase(input).titleCase.trim(),
                ),
               DateTimeField(
                 controller: _startDateController,
@@ -72,7 +75,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                             if (_formKey.currentState.validate()) {
                               _formKey.currentState.save();
                               final challenge = Challenge(_challengeName, _startDate);
-                              challenge.save();
+                              DatabaseHelper.instance.insertChallenge(challenge);
                               Scaffold.of(context).showSnackBar(SnackBar(
                                 content: Text(
                                   '$_challengeName Created', 
