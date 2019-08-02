@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:challenge_box/create_challenge.dart';
 import 'package:challenge_box/current_challenges.dart';
 
+class AppRoute {
+  static const currentChallenges = '/';
+  static const createChallenge = '/createChallenge';
+}
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
+      case AppRoute.currentChallenges:
         return MaterialPageRoute(builder: (_) => CurrentChallengesPage(
           title: 'Current Challenges',
         ));
-      case '/createChallenge':
+      case AppRoute.createChallenge:
         return MaterialPageRoute(builder: (_) => CreateChallengePage(
           title: 'Create Challenge',
         ));

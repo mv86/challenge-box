@@ -34,7 +34,7 @@ void main() {
 
     test('Can fail a challenge and update longestDurationDays and stats', () {
       final challenge = Challenge(challengeName, startDateYesterday);
-      final expectedStats = 'Marked as failed!\nLongest duration: 1 days';
+      final expectedStats = 'Marked as failed!\nLongest duration: 1 day';
 
       challenge.fail();
 

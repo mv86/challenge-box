@@ -14,8 +14,6 @@ class CreateChallengePage extends StatefulWidget {
   _CreateChallengePageState createState() => _CreateChallengePageState();
 }
 
-// TODO Research using setState here
-
 class _CreateChallengePageState extends State<CreateChallengePage> {
   final _formKey = GlobalKey<FormState>();
   final _dateFormat = DateFormat("dd-MM-yyyy");
@@ -44,7 +42,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                   labelText: 'Challenge Name',
                   hintText: 'E.g Quit Alcohol',
                 ),
-                validator: (input) => input.length < 1 ? 'You must choose a challenge name' : null,
+                validator: (input) => _validateName(input),
                 onSaved: (input) => _challengeName = ReCase(input).titleCase.trim(),
                ),
               DateTimeField(
@@ -73,17 +71,8 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                         child: RaisedButton(
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
-                              _formKey.currentState.save();
-                              final challenge = Challenge(_challengeName, _startDate);
-                              DatabaseHelper.instance.insertChallenge(challenge);
-                              Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                  '$_challengeName Created', 
-                                  style: TextStyle(fontSize: 18.0, color: Colors.teal[100])
-                                ),
-                              ));
-                              _nameController.clear();
-                              _startDateController.clear();
+                              _saveChallenge();
+                              _showSnackBar();
                             }
                           },
                           child: Text('Create Challenge'),
@@ -97,5 +86,37 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
         )
       )
     );
+  }
+
+  _validateName(String input) {
+    var nonAlphaNumericRegex = RegExp('[^\da-zA-Z]');
+
+    if (input.length < 1) {
+      return 'You must choose a challenge name';
+    }
+    if (nonAlphaNumericRegex.firstMatch(input) != null) {
+      return 'Challenge names must be alphanumeric';
+    }
+
+    return null;
+  }
+
+  _saveChallenge() {
+    _formKey.currentState.save();
+
+    final challenge = Challenge(_challengeName, _startDate);
+    DatabaseHelper.instance.insertChallenge(challenge);
+
+    _nameController.clear();
+    _startDateController.clear();
+  }
+
+  _showSnackBar() {
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(
+        '$_challengeName Created',
+        style: TextStyle(fontSize: 18.0, color: Colors.teal[100])
+      ),
+    ));
   }
 }

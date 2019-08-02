@@ -60,7 +60,7 @@ class Challenge {
 
     longestDurationDaysStats = 'Longest duration: $longestDurationDays day';
     if (longestDurationDays != 1) longestDurationDaysStats += 's';
-    
+
     return'$daysCompletedStats\n$longestDurationDaysStats';
   } 
 }
