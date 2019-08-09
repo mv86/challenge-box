@@ -32,7 +32,12 @@ class Challenge {
 
   daysCompleted() {
     if (failed) return 0;
-    return DateTime.now().difference(startDate).inDays;
+    return _todaysDate().difference(startDate).inDays;
+  }
+
+  datesCompleted() {
+    return List.generate(
+        daysCompleted(), (i) => _todaysDate().subtract(Duration(days: i + 1)));
   }
 
   fail() {
@@ -44,7 +49,7 @@ class Challenge {
 
   restart() {
     failed = false;
-    startDate = DateTime.now();
+    startDate = _todaysDate();
   }
 
   stats() {
@@ -61,6 +66,11 @@ class Challenge {
     longestDurationDaysStats = 'Longest duration: $longestDurationDays day';
     if (longestDurationDays != 1) longestDurationDaysStats += 's';
 
-    return'$daysCompletedStats\n$longestDurationDaysStats';
-  } 
+    return '$daysCompletedStats\n$longestDurationDaysStats';
+  }
+
+  _todaysDate() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
 }

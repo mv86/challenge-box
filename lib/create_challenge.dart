@@ -10,7 +10,7 @@ class CreateChallengePage extends StatefulWidget {
 
   final String title;
 
-   @override
+  @override
   _CreateChallengePageState createState() => _CreateChallengePageState();
 }
 
@@ -26,11 +26,10 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: (
-        Form(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: (Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,8 +42,9 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                   hintText: 'E.g Quit Alcohol',
                 ),
                 validator: (input) => _validateName(input),
-                onSaved: (input) => _challengeName = ReCase(input).titleCase.trim(),
-               ),
+                onSaved: (input) =>
+                    _challengeName = ReCase(input).titleCase.trim(),
+              ),
               DateTimeField(
                 controller: _startDateController,
                 decoration: InputDecoration(
@@ -54,13 +54,13 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                 format: _dateFormat,
                 onShowPicker: (context, currentValue) {
                   return showDatePicker(
-                    context: context,
-                    firstDate: DateTime(2018),
-                    initialDate: currentValue ?? DateTime.now(),
-                    lastDate: DateTime.now()
-                  );
+                      context: context,
+                      firstDate: DateTime(2018),
+                      initialDate: currentValue ?? DateTime.now(),
+                      lastDate: DateTime.now());
                 },
-                onSaved: (input) => input is DateTime ? _startDate = input : null,
+                onSaved: (input) =>
+                    input is DateTime ? _startDate = input : null,
               ),
               Builder(
                 builder: (context) => Row(
@@ -68,14 +68,14 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: RaisedButton(
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              _saveChallenge();
-                              _showSnackBar();
-                            }
-                          },
-                          child: Text('Create Challenge'),
+                      child: RaisedButton(
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            _saveChallenge();
+                            _showSnackBar();
+                          }
+                        },
+                        child: Text('Create Challenge'),
                       ),
                     ),
                   ],
@@ -83,9 +83,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
               ),
             ],
           ),
-        )
-      )
-    );
+        )));
   }
 
   _validateName(String input) {
@@ -104,7 +102,9 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   _saveChallenge() {
     _formKey.currentState.save();
 
-    final challenge = Challenge(_challengeName, _startDate);
+    final startDate =
+        DateTime(_startDate.year, _startDate.month, _startDate.day);
+    final challenge = Challenge(_challengeName, startDate);
     DatabaseHelper.instance.insertChallenge(challenge);
 
     _nameController.clear();
@@ -113,10 +113,8 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
 
   _showSnackBar() {
     Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text(
-        '$_challengeName Created',
-        style: TextStyle(fontSize: 18.0, color: Colors.teal[100])
-      ),
+      content: Text('$_challengeName Created',
+          style: TextStyle(fontSize: 18.0, color: Colors.teal[100])),
     ));
   }
 }
