@@ -87,7 +87,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   }
 
   _validateName(String input) {
-    var nonAlphaNumericRegex = RegExp('[^\da-zA-Z]');
+    var nonAlphaNumericRegex = RegExp('[^\da-zA-Z ]');
 
     if (input.length < 1) {
       return 'You must choose a challenge name';

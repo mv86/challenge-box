@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 
 import 'db/database_helper.dart';
@@ -20,56 +21,95 @@ class _ChallengePageState extends State<ChallengePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.challenge.name),
-        ),
-        body: Builder(builder: (BuildContext context) {
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: CalendarCarousel(
-                    thisMonthDayBorderColor: Colors.grey,
-                    height: 420.0,
-                    selectedDateTime: DateTime.now(),
-                    daysHaveCircularBorder: false,
-                    // markedDatesMap: _markedDateMap,
-                  ),
-                ),
-                ButtonBar(
-                  alignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    RaisedButton(
-                      key: Key('deleteButton'),
-                      onPressed: () =>
-                          _confirm(_deletAction, widget.challenge, context),
-                      child: Text('Delete'),
-                    ),
-                    RaisedButton(
-                      key: Key('restartButton'),
-                      onPressed: () =>
-                          _confirm(_restartAction, widget.challenge, context),
-                      child: Text('Restart'),
-                    ),
-                    RaisedButton(
-                      key: Key('failButton'),
-                      onPressed: () =>
-                          _confirm(_failAction, widget.challenge, context),
-                      child: Text('Fail'),
-                    ),
-                  ],
-                )
-              ],
+      appBar: AppBar(
+        title: Text(widget.challenge.name),
+      ),
+      body: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: CalendarCarousel(
+                thisMonthDayBorderColor: Colors.grey,
+                height: 420.0,
+                weekdayTextStyle: TextStyle(color: Colors.blueGrey[200]),
+                weekendTextStyle: TextStyle(color: Colors.black),
+                selectedDateTime: DateTime.now(),
+                selectedDayButtonColor: Colors.grey[600],
+                selectedDayBorderColor: Colors.grey[700],
+                daysHaveCircularBorder: false,
+                markedDatesMap: _markedCompletedDays(widget.challenge),
+                markedDateShowIcon: true,
+                markedDateIconMaxShown: 1,
+                markedDateIconBuilder: (event) => event.icon,
+              ),
             ),
-          );
-        }));
+            ButtonBar(
+              alignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                RaisedButton(
+                  key: Key('deleteButton'),
+                  onPressed: () =>
+                      _confirm(_deletAction, widget.challenge, context),
+                  child: Text('Delete'),
+                ),
+                RaisedButton(
+                  key: Key('restartButton'),
+                  onPressed: () =>
+                      _confirm(_restartAction, widget.challenge, context),
+                  child: Text('Restart'),
+                ),
+                RaisedButton(
+                  key: Key('failButton'),
+                  onPressed: widget.challenge.failed
+                      ? null
+                      : () => _confirm(_failAction, widget.challenge, context),
+
+                  child: Text('Fail'),
+                  // disabledColor: Colors.black,
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget _dayCompleted(String day) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.all(
+          Radius.circular(1000),
+        ),
+      ),
+      child: Center(
+        child: Text(day, style: TextStyle(color: Colors.black)),
+      ),
+    );
+  }
+
+  _markedCompletedDays(Challenge challenge) {
+    final eventList = EventList<Event>(events: {});
+
+    for (var dateCompleted in challenge.datesCompleted()) {
+      eventList.add(
+        dateCompleted,
+        Event(
+          date: dateCompleted,
+          title: 'Completed',
+          icon: _dayCompleted(dateCompleted.day.toString()),
+        ),
+      );
+    }
+
+    return eventList;
   }
 
   final Map<String, dynamic> _deletAction = {
     'type': 'Delete',
     'do': DatabaseHelper.instance.deleteChallenge,
-    'toNavigateAway': true,
   };
 
   final Map<String, dynamic> _restartAction = {
@@ -78,7 +118,6 @@ class _ChallengePageState extends State<ChallengePage> {
       challenge.restart();
       DatabaseHelper.instance.updateChallenge(challenge);
     },
-    'toNavigateAway': false,
   };
 
   final Map<String, dynamic> _failAction = {
@@ -87,7 +126,6 @@ class _ChallengePageState extends State<ChallengePage> {
       challenge.fail();
       DatabaseHelper.instance.updateChallenge(challenge);
     },
-    'toNavigateAway': false,
   };
 
   _confirm(action, challenge, context) async {
@@ -115,15 +153,7 @@ class _ChallengePageState extends State<ChallengePage> {
 
     if (confirmedAction) {
       action['do'](challenge);
-
-      if (action['toNavigateAway']) {
-        Navigator.of(context).pop();
-      } else {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text('${challenge.name} ${action['type']}ed',
-              style: TextStyle(fontSize: 18.0, color: Colors.teal[100])),
-        ));
-      }
+      Navigator.of(context).pop();
     }
   }
 }
