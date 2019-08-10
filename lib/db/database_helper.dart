@@ -1,13 +1,17 @@
 import 'dart:io' show Directory;
+import 'package:challenge_box/db/models/challenge_day_completed.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:challenge_box/db/db_constants.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 
+import 'db_migrations.dart';
+
 class DatabaseHelper {
   static final _databaseName = "ChallengeBox.db";
-  static final _databaseVersion = 2;
+  // Database version when started using new migration system
+  static final _seed = 2;
 
   // Make this a singleton class.
   DatabaseHelper._privateConstructor();
@@ -26,27 +30,18 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
 
-    return await openDatabase(path,
-        version: _databaseVersion,
-        onCreate: _onCreate,
-        onUpgrade: _onUpgrade,
+    return await openDatabase(
+      path,
+      version: migrationScripts.length + _seed,
+      onCreate: (Database db, int version) async {
+        initScript.forEach((command) async => await db.execute(command));
+      },
+      onUpgrade: (Database db, int oldVersion, int newVersion) async {
+        for (var i = oldVersion - _seed; i < newVersion - _seed; i++) {
+          await db.execute(migrationScripts[i]);
+        }
+      },
     );
-  }
-
-  Future _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE $tableChallenges (
-        $columnId INTEGER PRIMARY KEY,
-        $columnName TEXT NOT NULL,
-        $columnStartDate INTEGER NOT NULL,
-        $columnLongestDuration INTEGER NOT NULL DEFAULT 0,
-        $columnFailed BIT NOT NULL DEFAULT 0
-      );'''
-    );
-  }
-
-  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // await db.execute('TODO');
   }
 
   Future<int> insertChallenge(Challenge challenge) async {
@@ -57,10 +52,17 @@ class DatabaseHelper {
 
   Future<Challenge> queryChallenge(int id) async {
     Database db = await database;
-    List<Map> maps = await db.query(tableChallenges,
-        columns: [columnId, columnName, columnStartDate, columnLongestDuration, columnFailed],
-        where: '$columnId = ?',
-        whereArgs: [id],
+    List<Map> maps = await db.query(
+      tableChallenges,
+      columns: [
+        columnId,
+        columnName,
+        columnStartDate,
+        columnLongestDuration,
+        columnFailed
+      ],
+      where: '$columnId = ?',
+      whereArgs: [id],
     );
     if (maps.length > 0) {
       return Challenge.fromMap(maps.first);
@@ -73,7 +75,13 @@ class DatabaseHelper {
 
     List<Map> maps = await db.query(
       tableChallenges,
-      columns: [columnId, columnName, columnStartDate, columnLongestDuration, columnFailed],
+      columns: [
+        columnId,
+        columnName,
+        columnStartDate,
+        columnLongestDuration,
+        columnFailed
+      ],
     );
 
     List<Challenge> challengeMaps = [];
@@ -85,11 +93,52 @@ class DatabaseHelper {
 
   updateChallenge(Challenge challenge) async {
     Database db = await database;
-    await db.update(tableChallenges, challenge.toMap(), where: "$columnId = ?", whereArgs: [challenge.id]);
+    await db.update(tableChallenges, challenge.toMap(),
+        where: "$columnId = ?", whereArgs: [challenge.id]);
   }
-  
+
   deleteChallenge(Challenge challenge) async {
     Database db = await database;
-    await db.delete(tableChallenges, where: '$columnId = ?', whereArgs: [challenge.id]);
+    await db.delete(
+      tableChallenges,
+      where: '$columnId = ?',
+      whereArgs: [challenge.id],
+    );
+  }
+
+  Future<int> insertChallengeDayCompleted(
+    ChallengeDayCompleted completedDay,
+  ) async {
+    Database db = await database;
+    int id = await db.insert(tableChallengeDaysCompleted, completedDay.toMap());
+    return id;
+  }
+
+  deleteChallengeDaysCompleted(int challengeId) async {
+    Database db = await database;
+    await db.delete(
+      tableChallengeDaysCompleted,
+      where: '$columnChallengeIdFk = ?',
+      whereArgs: [challengeId],
+    );
+  }
+
+  Future<List<ChallengeDayCompleted>> queryPreviousChallengeDaysCompleted(
+    int challengeId,
+  ) async {
+    Database db = await database;
+    final previousCompletedDays = [];
+
+    List<Map> maps = await db.query(
+      tableChallengeDaysCompleted,
+      columns: [columnChallengeIdFk, columnCompletedDate],
+      where: '$columnChallengeIdFk = ?',
+      whereArgs: [challengeId],
+    );
+
+    for (final map in maps) {
+      previousCompletedDays.add(ChallengeDayCompleted.fromMap(map));
+    }
+    return previousCompletedDays;
   }
 }

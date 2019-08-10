@@ -1,5 +1,7 @@
 import 'package:challenge_box/db/db_constants.dart';
 
+import '../../utility_functions.dart';
+
 class Challenge {
   int id;
   String name;
@@ -69,8 +71,5 @@ class Challenge {
     return '$daysCompletedStats\n$longestDurationDaysStats';
   }
 
-  _todaysDate() {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
-  }
+  _todaysDate() => toDate(DateTime.now());
 }

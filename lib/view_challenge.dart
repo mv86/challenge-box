@@ -138,11 +138,13 @@ class _ChallengePageState extends State<ChallengePage> {
             content: new Text('Are you sure?'),
             actions: <Widget>[
               FlatButton(
+                  key: Key('yesButton'),
                   child: Text('Yes'),
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   }),
               FlatButton(
+                  key: Key('noButton'),
                   child: Text('No'),
                   onPressed: () {
                     Navigator.of(context).pop(false);

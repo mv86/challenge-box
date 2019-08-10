@@ -1,4 +1,5 @@
 import 'package:challenge_box/db/models/challenge.dart';
+import 'package:challenge_box/utility_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,8 +20,8 @@ void main() {
     Widget challengePageWidget;
     // NavigatorObserver mockObserver;
 
-    final _dt = DateTime.now().subtract(Duration(days: 2));
-    final startDate = DateTime(_dt.year, _dt.month, _dt.day);
+    final twoDaysAgo = DateTime.now().subtract(Duration(days: 2));
+    final startDate = toDate(twoDaysAgo);
 
     setUp(() {
       challenge = Challenge('Name', startDate);
@@ -50,15 +51,20 @@ void main() {
       await tester.tap(find.byKey(Key('failButton')));
       await tester.pump();
 
+      await tester.tap(find.byKey(Key('yesButton')));
+      await tester.pump();
+
       expect(challenge.failed, equals(true));
     });
 
     testWidgets('can restart Challenge', (WidgetTester tester) async {
       await tester.pumpWidget(createWidgetForTesting(challengePageWidget));
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
+      final today = toDate(DateTime.now());
 
       await tester.tap(find.byKey(Key('restartButton')));
+      await tester.pump();
+
+      await tester.tap(find.byKey(Key('yesButton')));
       await tester.pump();
 
       expect(challenge.startDate, equals(today));

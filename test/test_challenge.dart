@@ -1,17 +1,16 @@
+import 'package:challenge_box/utility_functions.dart';
 import 'package:test/test.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 
 void main() {
   group('Challenge', () {
     String challengeName;
-    DateTime now;
     DateTime startDateToday;
     DateTime startDateYesterday;
 
     setUp(() {
       challengeName = 'test name';
-      now = DateTime.now();
-      startDateToday = DateTime(now.year, now.month, now.day);
+      startDateToday = toDate(DateTime.now());
       startDateYesterday = startDateToday.subtract(Duration(days: 1));
     });
 

@@ -1,3 +1,4 @@
+import 'package:challenge_box/utility_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 import 'package:intl/intl.dart';
@@ -102,9 +103,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   _saveChallenge() {
     _formKey.currentState.save();
 
-    final startDate =
-        DateTime(_startDate.year, _startDate.month, _startDate.day);
-    final challenge = Challenge(_challengeName, startDate);
+    final challenge = Challenge(_challengeName, toDate(_startDate));
     DatabaseHelper.instance.insertChallenge(challenge);
 
     _nameController.clear();
