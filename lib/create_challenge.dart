@@ -73,7 +73,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
                             _saveChallenge();
-                            _showSnackBar();
+                            _showSnackBar(context);
                           }
                         },
                         child: Text('Create Challenge'),
@@ -88,7 +88,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   }
 
   _validateName(String input) {
-    var nonAlphaNumericRegex = RegExp('[^\da-zA-Z ]');
+    var nonAlphaNumericRegex = RegExp('[^0-9a-zA-Z ]');
 
     if (input.length < 1) {
       return 'You must choose a challenge name';
@@ -110,7 +110,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
     _startDateController.clear();
   }
 
-  _showSnackBar() {
+  _showSnackBar(BuildContext context) {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text('$_challengeName Created',
           style: TextStyle(fontSize: 18.0, color: Colors.teal[100])),
