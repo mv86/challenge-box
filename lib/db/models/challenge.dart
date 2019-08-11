@@ -50,6 +50,9 @@ class Challenge {
   }
 
   restart() {
+    if (daysCompleted() > longestDurationDays) {
+      longestDurationDays = daysCompleted();
+    }
     failed = false;
     startDate = _todaysDate();
   }

@@ -48,6 +48,19 @@ void main() {
       expect(challenge.stats(), equals(expectedStats));
     });
 
+    test('fields update on restart', () {
+      final challenge = Challenge(challengeName, startDateYesterday);
+      final expectedStats = 'Completed: 0 days\nLongest duration: 1 day';
+
+      challenge.restart();
+
+      expect(challenge.failed, equals(false));
+      expect(challenge.daysCompleted(), equals(0));
+      expect(challenge.datesCompleted(), equals([]));
+      expect(challenge.longestDurationDays, equals(1));
+      expect(challenge.stats(), equals(expectedStats));
+    });
+
     test('longestDurationDays not updated on fail when daysCompleted less', () {
       final challenge = Challenge(challengeName, startDateYesterday);
       final expectedStats = 'Marked as failed!\nLongest duration: 2 days';
@@ -92,10 +105,17 @@ void main() {
       expect(fromMappedChallenge.id, equals(challenge.id));
       expect(fromMappedChallenge.name, equals(challenge.name));
       expect(
-          fromMappedChallenge.startDate.day, equals(challenge.startDate.day));
-      expect(fromMappedChallenge.longestDurationDays,
-          equals(challenge.longestDurationDays));
-      expect(fromMappedChallenge.failed, equals(challenge.failed));
+        fromMappedChallenge.startDate.day,
+        equals(challenge.startDate.day),
+      );
+      expect(
+        fromMappedChallenge.longestDurationDays,
+        equals(challenge.longestDurationDays),
+      );
+      expect(
+        fromMappedChallenge.failed,
+        equals(challenge.failed),
+      );
     });
 
     test('can see a list of challenge dates completed', () {
