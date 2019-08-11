@@ -1,3 +1,4 @@
+import 'package:challenge_box/utility_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:challenge_box/db/database_helper.dart';
 import 'package:challenge_box/route_generator.dart';
@@ -18,7 +19,10 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: _displayCurrentChallenges(),
+      body: futureBuilderWrapper(
+        child: _currentChallenges,
+        futureAction: DatabaseHelper.instance.queryCurrentChallenges,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed(AppRoute.createChallenge);
@@ -31,30 +35,12 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
   }
 }
 
-Widget _displayCurrentChallenges() {
-  return FutureBuilder(
-    future: DatabaseHelper.instance.queryCurrentChallenges(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.done) {
-        if (snapshot.hasError) {
-          return new Text('${snapshot.error}',
-              style: TextStyle(color: Colors.red));
-        } else {
-          return _currentChallenges(snapshot);
-        }
-      } else {
-        return new Center(child: new CircularProgressIndicator());
-      }
-    },
-  );
-}
-
 _currentChallenges(challenges) {
   return ListView.builder(
     padding: EdgeInsets.all(8.0),
-    itemCount: challenges.data.length,
+    itemCount: challenges.length,
     itemBuilder: (BuildContext context, int index) {
-      var challenge = challenges.data[index];
+      var challenge = challenges[index];
       return Container(
           color: (index % 2 == 0) ? Colors.grey[800] : Colors.grey[850],
           child: ListTile(

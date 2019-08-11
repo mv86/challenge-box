@@ -106,12 +106,13 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> insertChallengeDayCompleted(
-    ChallengeDayCompleted completedDay,
+  insertChallengeDaysCompleted(
+    List<ChallengeDayCompleted> completedDays,
   ) async {
     Database db = await database;
-    int id = await db.insert(tableChallengeDaysCompleted, completedDay.toMap());
-    return id;
+    for (final completedDay in completedDays) {
+      await db.insert(tableChallengeDaysCompleted, completedDay.toMap());
+    }
   }
 
   deleteChallengeDaysCompleted(int challengeId) async {
@@ -123,11 +124,11 @@ class DatabaseHelper {
     );
   }
 
-  Future<List<ChallengeDayCompleted>> queryPreviousChallengeDaysCompleted(
+  Future<List<DateTime>> queryPreviousChallengeDatesCompleted(
     int challengeId,
   ) async {
     Database db = await database;
-    final previousCompletedDays = [];
+    final List<DateTime> previousDatesCompleted = [];
 
     List<Map> maps = await db.query(
       tableChallengeDaysCompleted,
@@ -137,8 +138,10 @@ class DatabaseHelper {
     );
 
     for (final map in maps) {
-      previousCompletedDays.add(ChallengeDayCompleted.fromMap(map));
+      final challengeDayCompleted = ChallengeDayCompleted.fromMap(map);
+      previousDatesCompleted.add(challengeDayCompleted.completedDate);
     }
-    return previousCompletedDays;
+
+    return previousDatesCompleted;
   }
 }

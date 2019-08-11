@@ -21,19 +21,21 @@ void main() {
       expect(challenge.name, equals(challengeName));
       expect(challenge.startDate, equals(startDateToday));
       expect(challenge.daysCompleted(), equals(0));
+      expect(challenge.datesCompleted(), equals([]));
       expect(challenge.longestDurationDays, equals(0));
       expect(challenge.stats(), equals(expectedStats));
     });
 
-    test('daysCompleted and stats update on date change', () {
+    test('fields update on date change', () {
       final challenge = Challenge(challengeName, startDateYesterday);
       final expectedStats = 'Completed: 1 day\nLongest duration: 0 days';
 
       expect(challenge.daysCompleted(), equals(1));
+      expect(challenge.datesCompleted(), equals([startDateYesterday]));
       expect(challenge.stats(), equals(expectedStats));
     });
 
-    test('can fail a challenge and update longestDurationDays and stats', () {
+    test('fields update on fail', () {
       final challenge = Challenge(challengeName, startDateYesterday);
       final expectedStats = 'Marked as failed!\nLongest duration: 1 day';
 
@@ -41,6 +43,7 @@ void main() {
 
       expect(challenge.failed, equals(true));
       expect(challenge.daysCompleted(), equals(0));
+      expect(challenge.datesCompleted(), equals([]));
       expect(challenge.longestDurationDays, equals(1));
       expect(challenge.stats(), equals(expectedStats));
     });
@@ -65,7 +68,7 @@ void main() {
       expect(challenge.daysCompleted(), equals(0));
     });
 
-    test('restart resets failed status and startDate', () {
+    test('restart resets fields', () {
       final challenge = Challenge(challengeName, startDateYesterday);
 
       challenge.fail();
@@ -74,6 +77,8 @@ void main() {
       challenge.restart();
 
       expect(challenge.failed, equals(false));
+      expect(challenge.daysCompleted(), equals(0));
+      expect(challenge.datesCompleted(), equals([]));
       expect(challenge.startDate.day, equals(DateTime.now().day));
     });
 
