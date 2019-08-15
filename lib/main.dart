@@ -7,9 +7,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Challenge Box',
       theme: ThemeData.dark(),
-      initialRoute: '/',
+      initialRoute: AppRoute.currentChallenges,
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
