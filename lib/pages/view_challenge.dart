@@ -1,11 +1,10 @@
+import 'package:challenge_box/db/database_helper.dart';
+import 'package:challenge_box/db/models/challenge.dart';
 import 'package:challenge_box/db/models/challenge_day_completed.dart';
 import 'package:challenge_box/utility_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
-
-import 'db/database_helper.dart';
-import 'db/models/challenge.dart';
 
 class ChallengePage extends StatefulWidget {
   final Challenge challenge;

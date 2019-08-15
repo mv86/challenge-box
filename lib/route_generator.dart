@@ -1,7 +1,7 @@
+import 'package:challenge_box/pages/create_challenge.dart';
+import 'package:challenge_box/pages/current_challenges.dart';
+import 'package:challenge_box/pages/view_challenge.dart';
 import 'package:flutter/material.dart';
-import 'package:challenge_box/view_challenge.dart';
-import 'package:challenge_box/create_challenge.dart';
-import 'package:challenge_box/current_challenges.dart';
 
 class AppRoute {
   static const currentChallenges = '/';
