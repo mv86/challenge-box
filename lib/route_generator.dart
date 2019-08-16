@@ -1,3 +1,5 @@
+import 'package:challenge_box/db/connections/challenge_connection.dart';
+import 'package:challenge_box/db/connections/challenge_day_completed_connection.dart';
 import 'package:challenge_box/pages/create_challenge.dart';
 import 'package:challenge_box/pages/current_challenges.dart';
 import 'package:challenge_box/pages/view_challenge.dart';
@@ -18,16 +20,20 @@ class RouteGenerator {
         return MaterialPageRoute(
             builder: (_) => CurrentChallengesPage(
                   title: 'Current Challenges',
+                  dbConnection: ChallengeConnection(),
                 ));
       case AppRoute.createChallenge:
         return MaterialPageRoute(
             builder: (_) => CreateChallengePage(
                   title: 'Create Challenge',
+                  dbConnection: ChallengeConnection(),
                 ));
       case AppRoute.challenge:
         return MaterialPageRoute(
             builder: (_) => ChallengePage(
                   challenge: args['challenge'],
+                  challengeConnection: ChallengeConnection(),
+                  challengeDateConnection: ChallengeDayCompletedConnection(),
                 ));
       default:
         return _errorRoute();

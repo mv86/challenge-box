@@ -1,4 +1,4 @@
-import 'package:challenge_box/db/db_constants.dart';
+import 'package:challenge_box/db/constants.dart';
 
 final List<String> initScript = [
   '''
@@ -7,12 +7,12 @@ final List<String> initScript = [
     $columnName TEXT NOT NULL,
     $columnStartDate INTEGER NOT NULL,
     $columnLongestDuration INTEGER NOT NULL DEFAULT 0,
-    $columnFailed BIT NOT NULL DEFAULT 0
+    $columnFailed BIT NOT NULL DEFAULT 0,
+    $columnFailedDate INTEGER NULL,
+    $columnEndDate INTEGER NULL,
+    CONSTRAINT $uniqueChallengeName UNIQUE ($columnName)
   );
   ''',
-];
-
-final List<String> migrationScripts = [
   '''
   CREATE TABLE $tableChallengeDaysCompleted (
     $columnId INTEGER PRIMARY KEY,
@@ -22,3 +22,5 @@ final List<String> migrationScripts = [
   );
   ''',
 ];
+
+final List<String> migrationScripts = [];

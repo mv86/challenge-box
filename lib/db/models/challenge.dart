@@ -1,4 +1,4 @@
-import 'package:challenge_box/db/db_constants.dart';
+import 'package:challenge_box/db/constants.dart';
 
 import '../../utility_functions.dart';
 

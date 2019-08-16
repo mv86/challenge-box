@@ -1,9 +1,18 @@
+import 'dart:math';
+
 import 'package:challenge_box/db/models/challenge.dart';
 import 'package:challenge_box/pages/view_challenge.dart';
 import 'package:challenge_box/utility_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+
+Widget createWidgetForTesting(Widget childWidget) {
+  return MaterialApp(
+    home: childWidget,
+  );
+}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 

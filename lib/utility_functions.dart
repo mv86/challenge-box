@@ -4,8 +4,11 @@ DateTime toDate(DateTime dateTime) {
   return DateTime(dateTime.year, dateTime.month, dateTime.day);
 }
 
-Widget futureBuilderWrapper(
-    {@required Function child, @required Function futureAction, int id}) {
+Widget futureBuilderWrapper({
+  @required Function child,
+  @required Function futureAction,
+  int id,
+}) {
   return FutureBuilder(
     future: id != null ? futureAction(id) : futureAction(),
     builder: (context, snapshot) {

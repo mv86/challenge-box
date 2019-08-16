@@ -1,12 +1,17 @@
+import 'package:challenge_box/db/connections/challenge_connection.dart';
 import 'package:challenge_box/utility_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:challenge_box/db/database_helper.dart';
 import 'package:challenge_box/route_generator.dart';
 
 class CurrentChallengesPage extends StatefulWidget {
-  CurrentChallengesPage({Key key, this.title}) : super(key: key);
+  CurrentChallengesPage({
+    Key key,
+    @required this.title,
+    @required this.dbConnection,
+  }) : super(key: key);
 
   final String title;
+  final ChallengeConnection dbConnection;
 
   @override
   _CurrentChallengesPageState createState() => _CurrentChallengesPageState();
@@ -21,7 +26,7 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
       ),
       body: futureBuilderWrapper(
         child: _currentChallenges,
-        futureAction: DatabaseHelper.instance.queryCurrentChallenges,
+        futureAction: widget.dbConnection.queryCurrentChallenges,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
