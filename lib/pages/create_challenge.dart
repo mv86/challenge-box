@@ -74,10 +74,11 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: RaisedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState.validate()) {
-                          _saveChallenge(widget.dbConnection);
-                          _showSnackBar(context);
+                          int challengeId =
+                              await _saveChallenge(widget.dbConnection);
+                          _showSnackBar(context, challengeId);
                         }
                       },
                       child: Text('Create Challenge'),
@@ -105,20 +106,34 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
     return null;
   }
 
-  _saveChallenge(dbConnection) {
+  _saveChallenge(dbConnection) async {
     _formKey.currentState.save();
 
     final challenge = Challenge(_challengeName, toDate(_startDate));
-    dbConnection.insertChallenge(challenge);
+    int challengeId = await dbConnection.insertChallenge(challenge);
 
     _nameController.clear();
     _startDateController.clear();
+
+    return challengeId;
   }
 
-  _showSnackBar(BuildContext context) {
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text('$_challengeName Created',
-          style: TextStyle(fontSize: 18.0, color: Colors.teal[100])),
-    ));
+  _showSnackBar(BuildContext context, int challengeId) {
+    var text = '$_challengeName Created';
+    var color = Colors.teal[100];
+
+    if (challengeId == null) {
+      text = '$_challengeName is already taken';
+      color = Colors.red;
+    }
+
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          text,
+          style: TextStyle(fontSize: 18.0, color: color),
+        ),
+      ),
+    );
   }
 }

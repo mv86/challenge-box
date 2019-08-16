@@ -8,9 +8,16 @@ class ChallengeConnection {
 
   ChallengeConnection();
 
-  Future<int> insertChallenge(Challenge challenge) async {
+  insertChallenge(Challenge challenge) async {
     Database db = await database;
-    int id = await db.insert(tableChallenges, challenge.toMap());
+    int id;
+    try {
+      id = await db.insert(tableChallenges, challenge.toMap());
+    } on DatabaseException catch (error) {
+      if (!error.toString().contains('UNIQUE constraint failed')) {
+        rethrow;
+      }
+    }
     return id;
   }
 
