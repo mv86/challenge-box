@@ -50,6 +50,7 @@ class _ChallengePageState extends State<ChallengePage> {
       child: Column(
         children: <Widget>[
           Expanded(
+            flex: 7,
             child: CalendarCarousel(
               thisMonthDayBorderColor: Colors.grey,
               height: 420.0,
@@ -66,37 +67,51 @@ class _ChallengePageState extends State<ChallengePage> {
               markedDateIconBuilder: (event) => event.icon,
             ),
           ),
-          ButtonBar(
-            alignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              RaisedButton(
-                key: ValueKey('deleteButton'),
-                onPressed: () => _confirm(
-                  'Delete',
-                  widget.challenge,
-                  context,
-                  () => widget.challengeConnection.deleteChallenge(
+          Expanded(
+            flex: 1,
+            child: Row(
+              children: [
+                _iconExplanation(Colors.green, '  Current Challenge'),
+                Spacer(),
+                _iconExplanation(Colors.green[200], '  Previously Completed'),
+              ],
+            ),
+          ),
+          Spacer(flex: 1),
+          Expanded(
+            flex: 2,
+            child: ButtonBar(
+              alignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                RaisedButton(
+                  key: ValueKey('deleteButton'),
+                  onPressed: () => _confirm(
+                    'Delete',
                     widget.challenge,
+                    context,
+                    () => widget.challengeConnection.deleteChallenge(
+                      widget.challenge,
+                    ),
                   ),
+                  child: Text('Delete'),
                 ),
-                child: Text('Delete'),
-              ),
-              RaisedButton(
-                key: ValueKey('${buttonText.toLowerCase()}Button'),
-                onPressed: widget.challenge.failedToday()
-                    ? null
-                    : () => _confirm(
-                          buttonText,
-                          widget.challenge,
-                          context,
-                          () => _updateChallenge(
+                RaisedButton(
+                  key: ValueKey('${buttonText.toLowerCase()}Button'),
+                  onPressed: widget.challenge.failedToday()
+                      ? null
+                      : () => _confirm(
+                            buttonText,
                             widget.challenge,
-                            buttonAction,
+                            context,
+                            () => _updateChallenge(
+                              widget.challenge,
+                              buttonAction,
+                            ),
                           ),
-                        ),
-                child: Text(buttonText),
-              ),
-            ],
+                  child: Text(buttonText),
+                ),
+              ],
+            ),
           )
         ],
       ),
@@ -195,5 +210,21 @@ Widget _dayCompletedIcon({String text, Color iconColor}) {
     child: Center(
       child: Text(text, style: TextStyle(color: Colors.black)),
     ),
+  );
+}
+
+Widget _iconExplanation(Color color, String text) {
+  return Row(
+    children: <Widget>[
+      Container(
+        width: 35.0,
+        height: 35.0,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+      ),
+      Text('$text'),
+    ],
   );
 }
