@@ -30,7 +30,9 @@ class ChallengeConnection {
         columnName,
         columnStartDate,
         columnLongestDuration,
-        columnFailed
+        columnFailed,
+        columnFailedDate,
+        columnEndDate
       ],
       where: '$columnId = ?',
       whereArgs: [id],
@@ -60,7 +62,9 @@ class ChallengeConnection {
         columnName,
         columnStartDate,
         columnLongestDuration,
-        columnFailed
+        columnFailed,
+        columnFailedDate,
+        columnEndDate
       ],
     );
 

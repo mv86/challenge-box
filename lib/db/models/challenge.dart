@@ -8,23 +8,29 @@ class Challenge {
   DateTime startDate;
   int longestDurationDays = 0;
   bool failed = false;
+  DateTime failedDate;
+  DateTime endDate;
 
   Challenge(this.name, this.startDate);
 
   Challenge.fromMap(Map<String, dynamic> map) {
     id = map[columnId];
     name = map[columnName];
-    startDate = DateTime.fromMillisecondsSinceEpoch(map[columnStartDate]);
+    startDate = _toDateTime(map[columnStartDate]);
     longestDurationDays = map[columnLongestDuration];
     failed = (map[columnFailed] == 0) ? false : true;
+    failedDate = _toDateTime(map[columnFailedDate]);
+    endDate = _toDateTime(map[columnEndDate]);
   }
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       columnName: name,
-      columnStartDate: startDate.millisecondsSinceEpoch,
+      columnStartDate: _toEpochTime(startDate),
       columnLongestDuration: longestDurationDays,
       columnFailed: failed ? 1 : 0,
+      columnFailedDate: _toEpochTime(failedDate),
+      columnEndDate: _toEpochTime(endDate),
     };
     if (id != null) {
       map[columnId] = id;
@@ -32,32 +38,38 @@ class Challenge {
     return map;
   }
 
-  daysCompleted() {
+  int daysCompleted() {
     if (failed) return 0;
     return _todaysDate().difference(startDate).inDays;
   }
 
-  datesCompleted() {
+  List<DateTime> datesCompleted() {
     return List.generate(
         daysCompleted(), (i) => _todaysDate().subtract(Duration(days: i + 1)));
   }
 
-  fail() {
+  bool failedToday() {
+    return failedDate == _todaysDate();
+  }
+
+  void fail() {
     if (daysCompleted() > longestDurationDays) {
       longestDurationDays = daysCompleted();
     }
     failed = true;
+    failedDate = _todaysDate();
   }
 
-  restart() {
+  void restart() {
     if (daysCompleted() > longestDurationDays) {
       longestDurationDays = daysCompleted();
     }
     failed = false;
+    failedDate = null;
     startDate = _todaysDate();
   }
 
-  stats() {
+  String stats() {
     String daysCompletedStats;
     String longestDurationDaysStats;
 
@@ -74,5 +86,15 @@ class Challenge {
     return '$daysCompletedStats\n$longestDurationDaysStats';
   }
 
-  _todaysDate() => toDate(DateTime.now());
+  DateTime _todaysDate() => toDate(DateTime.now());
+
+  int _toEpochTime(DateTime datetime) {
+    if (datetime == null) return null;
+    return datetime.millisecondsSinceEpoch;
+  }
+
+  DateTime _toDateTime(int epochTime) {
+    if (epochTime == null) return null;
+    return DateTime.fromMillisecondsSinceEpoch(epochTime);
+  }
 }

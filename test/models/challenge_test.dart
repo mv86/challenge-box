@@ -24,6 +24,9 @@ void main() {
       expect(challenge.datesCompleted(), equals([]));
       expect(challenge.longestDurationDays, equals(0));
       expect(challenge.stats(), equals(expectedStats));
+      expect(challenge.endDate, equals(null));
+      expect(challenge.failedDate, equals(null));
+      expect(challenge.failedToday(), equals(false));
     });
 
     test('fields update on date change', () {
@@ -42,23 +45,28 @@ void main() {
       challenge.fail();
 
       expect(challenge.failed, equals(true));
+      expect(challenge.failedDate, equals(toDate(DateTime.now())));
       expect(challenge.daysCompleted(), equals(0));
       expect(challenge.datesCompleted(), equals([]));
       expect(challenge.longestDurationDays, equals(1));
       expect(challenge.stats(), equals(expectedStats));
+      expect(challenge.failedToday(), equals(true));
     });
 
     test('fields update on restart', () {
       final challenge = Challenge(challengeName, startDateYesterday);
       final expectedStats = 'Completed: 0 days\nLongest duration: 1 day';
 
+      challenge.fail();
       challenge.restart();
 
       expect(challenge.failed, equals(false));
+      expect(challenge.failedDate, equals(null));
       expect(challenge.daysCompleted(), equals(0));
       expect(challenge.datesCompleted(), equals([]));
       expect(challenge.longestDurationDays, equals(1));
       expect(challenge.stats(), equals(expectedStats));
+      expect(challenge.startDate.day, equals(DateTime.now().day));
     });
 
     test('longestDurationDays not updated on fail when daysCompleted less', () {
@@ -81,20 +89,6 @@ void main() {
       expect(challenge.daysCompleted(), equals(0));
     });
 
-    test('restart resets fields', () {
-      final challenge = Challenge(challengeName, startDateYesterday);
-
-      challenge.fail();
-      expect(challenge.failed, equals(true));
-
-      challenge.restart();
-
-      expect(challenge.failed, equals(false));
-      expect(challenge.daysCompleted(), equals(0));
-      expect(challenge.datesCompleted(), equals([]));
-      expect(challenge.startDate.day, equals(DateTime.now().day));
-    });
-
     test('can map to database representation and back', () {
       final challenge = Challenge(challengeName, startDateToday);
       challenge.id = 1;
@@ -115,6 +109,14 @@ void main() {
       expect(
         fromMappedChallenge.failed,
         equals(challenge.failed),
+      );
+      expect(
+        fromMappedChallenge.failedDate,
+        equals(challenge.failedDate),
+      );
+      expect(
+        fromMappedChallenge.endDate,
+        equals(challenge.endDate),
       );
     });
 

@@ -27,18 +27,24 @@ class _ChallengePageState extends State<ChallengePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.challenge.name),
-        ),
-        body: futureBuilderWrapper(
-          child: _displayChallengeData,
-          futureAction: widget
-              .challengeDateConnection.queryPreviousChallengeDatesCompleted,
-          id: widget.challenge.id,
-        ));
+      appBar: AppBar(
+        title: Text(widget.challenge.name),
+      ),
+      body: futureBuilderWrapper(
+        child: _displayChallengeData,
+        futureAction:
+            widget.challengeDateConnection.queryPreviousChallengeDatesCompleted,
+        id: widget.challenge.id,
+      ),
+    );
   }
 
   _displayChallengeData(previousDatesCompleted) {
+    final buttonText = widget.challenge.failed ? 'Restart' : 'Fail';
+    final buttonAction = widget.challenge.failed
+        ? widget.challenge.restart
+        : widget.challenge.fail;
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -61,45 +67,34 @@ class _ChallengePageState extends State<ChallengePage> {
             ),
           ),
           ButtonBar(
-            alignment: MainAxisAlignment.spaceBetween,
+            alignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               RaisedButton(
-                key: Key('deleteButton'),
+                key: ValueKey('deleteButton'),
                 onPressed: () => _confirm(
                   'Delete',
                   widget.challenge,
                   context,
-                  widget.challengeConnection.deleteChallenge,
+                  () => widget.challengeConnection.deleteChallenge(
+                    widget.challenge,
+                  ),
                 ),
                 child: Text('Delete'),
               ),
               RaisedButton(
-                key: Key('restartButton'),
-                onPressed: () => _confirm(
-                  'Restart',
-                  widget.challenge,
-                  context,
-                  () => _updateChallenge(
-                    widget.challenge,
-                    widget.challenge.restart,
-                  ),
-                ),
-                child: Text('Restart'),
-              ),
-              RaisedButton(
-                key: Key('failButton'),
-                onPressed: widget.challenge.failed
+                key: ValueKey('${buttonText.toLowerCase()}Button'),
+                onPressed: widget.challenge.failedToday()
                     ? null
                     : () => _confirm(
-                          'Fail',
+                          buttonText,
                           widget.challenge,
                           context,
                           () => _updateChallenge(
                             widget.challenge,
-                            widget.challenge.fail,
+                            buttonAction,
                           ),
                         ),
-                child: Text('Fail'),
+                child: Text(buttonText),
               ),
             ],
           )
@@ -114,7 +109,7 @@ class _ChallengePageState extends State<ChallengePage> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text('{actionName} ${challenge.name}'),
+            title: new Text('$actionName ${challenge.name}'),
             content: new Text('Are you sure?'),
             actions: <Widget>[
               FlatButton(
@@ -134,7 +129,7 @@ class _ChallengePageState extends State<ChallengePage> {
         });
 
     if (confirmedAction) {
-      doAction(challenge);
+      doAction();
       Navigator.of(context).pop();
     }
   }

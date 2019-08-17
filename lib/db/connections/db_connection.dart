@@ -14,16 +14,8 @@ class DatabaseConnection {
   // Only allow a single open connection to the database.
   static Database _database;
   Future<Database> get database async {
-    if (_database != null) {
-      print('old db');
-      final version = await _database.getVersion();
-      print(version);
-    }
     if (_database != null) return _database;
     _database = await _initDatabase();
-    print('in if');
-    final version = await _database.getVersion();
-    print(version);
     return _database;
   }
 
