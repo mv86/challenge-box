@@ -18,6 +18,8 @@ class CurrentChallengesPage extends StatefulWidget {
 }
 
 class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
+  List<String> _currentChallengeNames;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +32,12 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(AppRoute.createChallenge);
+          Navigator.of(context).pushNamed(
+            AppRoute.createChallenge,
+            arguments: {
+              'currentChallengeNames': _currentChallengeNames,
+            },
+          );
         },
         child: Icon(Icons.add),
         tooltip: 'Create New Challenge',
@@ -38,15 +45,16 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-}
 
-_currentChallenges(challenges) {
-  return ListView.builder(
-    padding: EdgeInsets.all(8.0),
-    itemCount: challenges.length,
-    itemBuilder: (BuildContext context, int index) {
-      var challenge = challenges[index];
-      return Container(
+  _currentChallenges(challenges) {
+    _currentChallengeNames = [...challenges.map((challenge) => challenge.name)];
+
+    return ListView.builder(
+      padding: EdgeInsets.all(8.0),
+      itemCount: challenges.length,
+      itemBuilder: (BuildContext context, int index) {
+        var challenge = challenges[index];
+        return Container(
           color: (index % 2 == 0) ? Colors.grey[800] : Colors.grey[850],
           child: ListTile(
             title: Text(challenge.name, style: TextStyle(fontSize: 28.0)),
@@ -57,7 +65,9 @@ _currentChallenges(challenges) {
               AppRoute.challenge,
               arguments: {'challenge': challenge},
             ),
-          ));
-    },
-  );
+          ),
+        );
+      },
+    );
+  }
 }

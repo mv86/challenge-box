@@ -8,17 +8,9 @@ class ChallengeConnection {
 
   ChallengeConnection();
 
-  insertChallenge(Challenge challenge) async {
+  Future<void> insertChallenge(Challenge challenge) async {
     Database db = await database;
-    int id;
-    try {
-      id = await db.insert(tableChallenges, challenge.toMap());
-    } on DatabaseException catch (error) {
-      if (!error.toString().contains('UNIQUE constraint failed')) {
-        rethrow;
-      }
-    }
-    return id;
+    await db.insert(tableChallenges, challenge.toMap());
   }
 
   Future<Challenge> queryChallenge(int id) async {
@@ -41,15 +33,6 @@ class ChallengeConnection {
       return Challenge.fromMap(maps.first);
     }
     return null;
-  }
-
-  Future<List<String>> queryChallengeNames() async {
-    Database db = await database;
-    final maps = await db.query(
-      tableChallenges,
-      columns: [columnName],
-    );
-    return List.generate(maps.length, (i) => maps[i][columnName]);
   }
 
   Future<List<Challenge>> queryCurrentChallenges() async {
@@ -75,13 +58,13 @@ class ChallengeConnection {
     return challengeMaps;
   }
 
-  updateChallenge(Challenge challenge) async {
+  Future<void> updateChallenge(Challenge challenge) async {
     Database db = await database;
     await db.update(tableChallenges, challenge.toMap(),
         where: "$columnId = ?", whereArgs: [challenge.id]);
   }
 
-  deleteChallenge(Challenge challenge) async {
+  Future<void> deleteChallenge(Challenge challenge) async {
     Database db = await database;
     await db.delete(
       tableChallenges,

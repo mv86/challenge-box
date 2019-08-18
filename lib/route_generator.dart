@@ -26,6 +26,7 @@ class RouteGenerator {
         return MaterialPageRoute(
             builder: (_) => CreateChallengePage(
                   title: 'Create Challenge',
+                  currentChallengeNames: args['currentChallengeNames'],
                   dbConnection: ChallengeConnection(),
                 ));
       case AppRoute.challenge:

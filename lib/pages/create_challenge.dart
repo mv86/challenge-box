@@ -7,14 +7,16 @@ import 'package:recase/recase.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 class CreateChallengePage extends StatefulWidget {
+  final String title;
+  final List<String> currentChallengeNames;
+  final ChallengeConnection dbConnection;
+
   CreateChallengePage({
     Key key,
     @required this.title,
+    @required this.currentChallengeNames,
     @required this.dbConnection,
   }) : super(key: key);
-
-  final String title;
-  final ChallengeConnection dbConnection;
 
   @override
   _CreateChallengePageState createState() => _CreateChallengePageState();
@@ -45,11 +47,10 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
               decoration: InputDecoration(
                 icon: Icon(Icons.equalizer),
                 labelText: 'Challenge Name',
-                hintText: 'E.g Quit Alcohol',
+                hintText: 'E.g. Don\'t Smoke',
               ),
-              validator: (input) => _validateName(input),
-              onSaved: (input) =>
-                  _challengeName = ReCase(input).titleCase.trim(),
+              validator: (name) => _validateName(ReCase(name).titleCase.trim()),
+              onSaved: (name) => _challengeName = ReCase(name).titleCase.trim(),
             ),
             DateTimeField(
               controller: _startDateController,
@@ -76,9 +77,8 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                     child: RaisedButton(
                       onPressed: () async {
                         if (_formKey.currentState.validate()) {
-                          int challengeId =
-                              await _saveChallenge(widget.dbConnection);
-                          _showSnackBar(context, challengeId);
+                          _saveChallenge(widget.dbConnection);
+                          _showSnackBar(context);
                         }
                       },
                       child: Text('Create Challenge'),
@@ -102,36 +102,29 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
     if (nonAlphaNumericRegex.firstMatch(name) != null) {
       return 'Challenge names must be alphanumeric';
     }
+    if (widget.currentChallengeNames.contains(name)) {
+      return 'Challenge already exists';
+    }
 
     return null;
   }
 
-  _saveChallenge(dbConnection) async {
+  _saveChallenge(dbConnection) {
     _formKey.currentState.save();
 
     final challenge = Challenge(_challengeName, toDate(_startDate));
-    int challengeId = await dbConnection.insertChallenge(challenge);
+    dbConnection.insertChallenge(challenge);
 
     _nameController.clear();
     _startDateController.clear();
-
-    return challengeId;
   }
 
-  _showSnackBar(BuildContext context, int challengeId) {
-    var text = '$_challengeName Created';
-    var color = Colors.teal[100];
-
-    if (challengeId == null) {
-      text = '$_challengeName is already taken';
-      color = Colors.red;
-    }
-
+  _showSnackBar(BuildContext context) {
     Scaffold.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          text,
-          style: TextStyle(fontSize: 18.0, color: color),
+          '$_challengeName Created',
+          style: TextStyle(fontSize: 18.0, color: Colors.teal[100]),
         ),
       ),
     );
