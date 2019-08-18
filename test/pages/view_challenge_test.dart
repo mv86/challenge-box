@@ -1,5 +1,5 @@
-import 'dart:math';
-
+import 'package:challenge_box/db/connections/challenge_connection.dart';
+import 'package:challenge_box/db/connections/challenge_day_completed_connection.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 import 'package:challenge_box/pages/view_challenge.dart';
 import 'package:challenge_box/utility_functions.dart';
@@ -8,19 +8,22 @@ import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-Widget createWidgetForTesting(Widget childWidget) {
-  return MaterialApp(
-    home: childWidget,
-  );
-}
+import '../utilities.dart';
+
+class MockChallengeDateConnection extends Mock
+    implements ChallengeDayCompletedConnection {}
+
+class MockChallengeConnection extends Mock implements ChallengeConnection {}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 void main() {
   group('ChallengePage Widget', () {
     Challenge challenge;
-    // Widget challengePageWidget;
+    Widget challengePageWidget;
     // NavigatorObserver mockObserver;
+    MockChallengeConnection mockChallengeConnection;
+    MockChallengeDateConnection mockChallengeDateConnection;
 
     final twoDaysAgo = DateTime.now().subtract(Duration(days: 2));
     final startDate = toDate(twoDaysAgo);
@@ -28,28 +31,32 @@ void main() {
     setUp(() {
       challenge = Challenge('Name', startDate);
       challenge.id = 1;
-      // challengePageWidget = ChallengePage(challenge: challenge);
+      challengePageWidget = ChallengePage(
+        challenge: challenge,
+        challengeConnection: mockChallengeConnection,
+        challengeDateConnection: mockChallengeDateConnection,
+      );
       // mockObserver = MockNavigatorObserver();
     });
     // TODO Fix why no longer working, to do with using future builder?
 
-    // testWidgets('can be instantiated', (WidgetTester tester) async {
-    //   // await tester.runAsync(() async {
-    //   await tester.pumpWidget(createWidgetForTesting(challengePageWidget));
+    testWidgets('can be instantiated', (WidgetTester tester) async {
+      // await tester.runAsync(() async {
+      await tester.pumpWidget(createWidgetForTesting(challengePageWidget));
 
-    //   final titleFinder = find.text('Name');
-    //   final calenderFinder = find.byType(CalendarCarousel);
-    //   final failButtonFinder = find.byKey(Key('failButton'));
-    //   final restartButtonFinder = find.byKey(Key('restartButton'));
-    //   final deleteButtonFinder = find.byKey(Key('deleteButton'));
+      final titleFinder = find.text('Name');
+      final calenderFinder = find.byType(CalendarCarousel);
+      final failButtonFinder = find.byKey(Key('failButton'));
+      final restartButtonFinder = find.byKey(Key('restartButton'));
+      final deleteButtonFinder = find.byKey(Key('deleteButton'));
 
-    //   expect(titleFinder, findsOneWidget);
-    //   expect(calenderFinder, findsOneWidget);
-    //   expect(failButtonFinder, findsOneWidget);
-    //   expect(restartButtonFinder, findsOneWidget);
-    //   expect(deleteButtonFinder, findsOneWidget);
-    //   // });
-    // });
+      expect(titleFinder, findsOneWidget);
+      expect(calenderFinder, findsOneWidget);
+      expect(failButtonFinder, findsOneWidget);
+      expect(restartButtonFinder, findsOneWidget);
+      expect(deleteButtonFinder, findsOneWidget);
+      // });
+    });
 
     // testWidgets('can mark Challenge as failed', (WidgetTester tester) async {
     //   await tester.pumpWidget(createWidgetForTesting(challengePageWidget));
