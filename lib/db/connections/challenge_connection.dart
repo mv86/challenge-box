@@ -49,6 +49,8 @@ class ChallengeConnection {
         columnFailedDate,
         columnEndDate
       ],
+      orderBy:
+          "IFNULL($columnStartDate, $dummyFutureDate) ASC, $columnLongestDuration DESC",
     );
 
     List<Challenge> challengeMaps = [];

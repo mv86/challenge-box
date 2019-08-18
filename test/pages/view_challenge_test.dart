@@ -2,7 +2,7 @@ import 'package:challenge_box/db/connections/challenge_connection.dart';
 import 'package:challenge_box/db/connections/challenge_day_completed_connection.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 import 'package:challenge_box/pages/view_challenge.dart';
-import 'package:challenge_box/utility_functions.dart';
+import 'package:challenge_box/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:flutter_test/flutter_test.dart';

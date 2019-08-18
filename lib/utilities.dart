@@ -4,6 +4,16 @@ DateTime toDate(DateTime dateTime) {
   return DateTime(dateTime.year, dateTime.month, dateTime.day);
 }
 
+int toEpochTime(DateTime datetime) {
+  if (datetime == null) return null;
+  return datetime.millisecondsSinceEpoch;
+}
+
+DateTime toDateTime(int epochTime) {
+  if (epochTime == null) return null;
+  return DateTime.fromMillisecondsSinceEpoch(epochTime);
+}
+
 Widget futureBuilderWrapper({
   @required Function child,
   @required Function futureAction,

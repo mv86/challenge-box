@@ -1,4 +1,4 @@
-import 'package:challenge_box/utility_functions.dart';
+import 'package:challenge_box/utilities.dart';
 import 'package:test/test.dart';
 import 'package:challenge_box/db/models/challenge.dart';
 
@@ -46,6 +46,7 @@ void main() {
 
       expect(challenge.failed, equals(true));
       expect(challenge.failedDate, equals(toDate(DateTime.now())));
+      expect(challenge.startDate, equals(null));
       expect(challenge.daysCompleted(), equals(0));
       expect(challenge.datesCompleted(), equals([]));
       expect(challenge.longestDurationDays, equals(1));

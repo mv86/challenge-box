@@ -5,7 +5,7 @@ final List<String> initScript = [
   CREATE TABLE $tableChallenges (
     $columnId INTEGER PRIMARY KEY,
     $columnName TEXT NOT NULL,
-    $columnStartDate INTEGER NOT NULL,
+    $columnStartDate INTEGER NULL,
     $columnLongestDuration INTEGER NOT NULL DEFAULT 0,
     $columnFailed BIT NOT NULL DEFAULT 0,
     $columnFailedDate INTEGER NULL,

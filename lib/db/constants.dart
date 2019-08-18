@@ -12,3 +12,5 @@ final String uniqueChallengeName = 'unique_challenge_name';
 final String tableChallengeDaysCompleted = 'challenge_days_completed';
 final String columnChallengeIdFk = 'challenge_id';
 final String columnCompletedDate = 'completed_date';
+
+final String dummyFutureDate = '9999999999999';

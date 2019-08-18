@@ -1,6 +1,5 @@
 import 'package:challenge_box/db/constants.dart';
-
-import '../../utility_functions.dart';
+import 'package:challenge_box/utilities.dart';
 
 class Challenge {
   int id;
@@ -16,21 +15,21 @@ class Challenge {
   Challenge.fromMap(Map<String, dynamic> map) {
     id = map[columnId];
     name = map[columnName];
-    startDate = _toDateTime(map[columnStartDate]);
+    startDate = toDateTime(map[columnStartDate]);
     longestDurationDays = map[columnLongestDuration];
     failed = (map[columnFailed] == 0) ? false : true;
-    failedDate = _toDateTime(map[columnFailedDate]);
-    endDate = _toDateTime(map[columnEndDate]);
+    failedDate = toDateTime(map[columnFailedDate]);
+    endDate = toDateTime(map[columnEndDate]);
   }
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       columnName: name,
-      columnStartDate: _toEpochTime(startDate),
+      columnStartDate: toEpochTime(startDate),
       columnLongestDuration: longestDurationDays,
       columnFailed: failed ? 1 : 0,
-      columnFailedDate: _toEpochTime(failedDate),
-      columnEndDate: _toEpochTime(endDate),
+      columnFailedDate: toEpochTime(failedDate),
+      columnEndDate: toEpochTime(endDate),
     };
     if (id != null) {
       map[columnId] = id;
@@ -45,7 +44,9 @@ class Challenge {
 
   List<DateTime> datesCompleted() {
     return List.generate(
-        daysCompleted(), (i) => _todaysDate().subtract(Duration(days: i + 1)));
+      daysCompleted(),
+      (i) => _todaysDate().subtract(Duration(days: i + 1)),
+    );
   }
 
   bool failedToday() {
@@ -58,6 +59,7 @@ class Challenge {
     }
     failed = true;
     failedDate = _todaysDate();
+    startDate = null;
   }
 
   void restart() {
@@ -87,14 +89,4 @@ class Challenge {
   }
 
   DateTime _todaysDate() => toDate(DateTime.now());
-
-  int _toEpochTime(DateTime datetime) {
-    if (datetime == null) return null;
-    return datetime.millisecondsSinceEpoch;
-  }
-
-  DateTime _toDateTime(int epochTime) {
-    if (epochTime == null) return null;
-    return DateTime.fromMillisecondsSinceEpoch(epochTime);
-  }
 }
