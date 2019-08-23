@@ -10,7 +10,7 @@ class Challenge {
   DateTime failedDate;
   DateTime endDate;
 
-  Challenge(this.name, this.startDate);
+  Challenge(this.name, this.startDate, this.endDate);
 
   Challenge.fromMap(Map<String, dynamic> map) {
     id = map[columnId];

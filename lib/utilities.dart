@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 DateTime toDate(DateTime dateTime) {
+  if (dateTime == null) return null;
   return DateTime(dateTime.year, dateTime.month, dateTime.day);
 }
 
-int toEpochTime(DateTime datetime) {
-  if (datetime == null) return null;
-  return datetime.millisecondsSinceEpoch;
+int toEpochTime(DateTime dateTime) {
+  if (dateTime == null) return null;
+  return dateTime.millisecondsSinceEpoch;
 }
 
 DateTime toDateTime(int epochTime) {

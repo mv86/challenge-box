@@ -27,9 +27,15 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   final _dateFormat = DateFormat("dd-MM-yyyy");
   final _nameController = TextEditingController();
   final _startDateController = TextEditingController();
+  final _endDateController = TextEditingController();
+
+  DateTime _tomorrow = DateTime.now().add(Duration(days: 1));
+  Duration _oneHundredYears = Duration(days: 36500);
 
   String _challengeName;
+  bool _timedChallenge = false;
   DateTime _startDate = DateTime.now();
+  DateTime _endDate;
 
   @override
   Widget build(BuildContext context) {
@@ -37,57 +43,95 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                icon: Icon(Icons.equalizer),
-                labelText: 'Challenge Name',
-                hintText: 'E.g. Don\'t Smoke',
-              ),
-              validator: (name) => _validateName(ReCase(name).titleCase.trim()),
-              onSaved: (name) => _challengeName = ReCase(name).titleCase.trim(),
-            ),
-            DateTimeField(
-              controller: _startDateController,
-              decoration: InputDecoration(
-                icon: Icon(Icons.calendar_today),
-                labelText: 'Challenge Start Date',
-              ),
-              format: _dateFormat,
-              onShowPicker: (context, currentValue) {
-                return showDatePicker(
-                    context: context,
-                    firstDate: DateTime(2018),
-                    initialDate: currentValue ?? DateTime.now(),
-                    lastDate: DateTime.now());
-              },
-              onSaved: (input) => input is DateTime ? _startDate = input : null,
-            ),
-            Builder(
-              builder: (context) => Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: RaisedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState.validate()) {
-                          _saveChallenge(widget.dbConnection);
-                          _showSnackBar(context);
-                        }
-                      },
-                      child: Text('Create Challenge'),
-                    ),
+      body: Container(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 2.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.text_format),
+                    labelText: 'Challenge Name',
+                    hintText: 'E.g. Do Not Smoke',
                   ),
-                ],
-              ),
+                  validator: (name) =>
+                      _validateName(ReCase(name).titleCase.trim()),
+                  onSaved: (name) => setState(
+                    () => _challengeName = ReCase(name).titleCase.trim(),
+                  ),
+                ),
+                DateTimeField(
+                  controller: _startDateController,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.calendar_today),
+                    labelText: 'Challenge Start Date',
+                  ),
+                  format: _dateFormat,
+                  onShowPicker: (context, currentValue) {
+                    return showDatePicker(
+                        context: context,
+                        firstDate: DateTime(2018),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime.now());
+                  },
+                  onSaved: (input) => setState(
+                    () => input is DateTime ? _startDate = input : null,
+                  ),
+                ),
+                DateTimeField(
+                  enabled: _timedChallenge ? true : false,
+                  controller: _endDateController,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.calendar_today),
+                    labelText: 'Challenge End Date',
+                  ),
+                  format: _dateFormat,
+                  onShowPicker: (context, currentValue) {
+                    return showDatePicker(
+                      context: context,
+                      firstDate: _tomorrow,
+                      initialDate: currentValue ?? _tomorrow,
+                      lastDate: DateTime.now().add(_oneHundredYears),
+                    );
+                  },
+                  onSaved: (input) => setState(
+                    () => input is DateTime ? _endDate = input : null,
+                  ),
+                ),
+                CheckboxListTile(
+                  title: Text(
+                    'Set Challenge End Date?',
+                    style: TextStyle(color: Colors.grey[500]),
+                  ),
+                  value: _timedChallenge,
+                  onChanged: (value) => setState(() => _timedChallenge = value),
+                ),
+                Builder(
+                  builder: (context) => Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: RaisedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState.validate()) {
+                              _saveChallenge(widget.dbConnection);
+                              _showSnackBar(context);
+                            }
+                          },
+                          child: Text('Create Challenge'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -112,11 +156,18 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   _saveChallenge(dbConnection) {
     _formKey.currentState.save();
 
-    final challenge = Challenge(_challengeName, toDate(_startDate));
+    final challenge = Challenge(
+      _challengeName,
+      toDate(_startDate),
+      toDate(_endDate),
+    );
+
     dbConnection.insertChallenge(challenge);
 
     _nameController.clear();
     _startDateController.clear();
+    _endDateController.clear();
+    setState(() => _timedChallenge = false);
   }
 
   _showSnackBar(BuildContext context) {

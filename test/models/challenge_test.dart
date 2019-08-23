@@ -7,15 +7,21 @@ void main() {
     String challengeName;
     DateTime startDateToday;
     DateTime startDateYesterday;
+    DateTime endDateTomorrow;
 
     setUp(() {
       challengeName = 'test name';
       startDateToday = toDate(DateTime.now());
       startDateYesterday = startDateToday.subtract(Duration(days: 1));
+      endDateTomorrow = DateTime.now().add(Duration(days: 1));
     });
 
-    test('can be instantiated with challengeName and start date', () {
-      final challenge = Challenge(challengeName, startDateToday);
+    test('can be instantiated', () {
+      final challenge = Challenge(
+        challengeName,
+        startDateToday,
+        endDateTomorrow,
+      );
       final expectedStats = 'Completed: 0 days\nLongest duration: 0 days';
 
       expect(challenge.name, equals(challengeName));
@@ -24,13 +30,13 @@ void main() {
       expect(challenge.datesCompleted(), equals([]));
       expect(challenge.longestDurationDays, equals(0));
       expect(challenge.stats(), equals(expectedStats));
-      expect(challenge.endDate, equals(null));
+      expect(challenge.endDate, equals(endDateTomorrow));
       expect(challenge.failedDate, equals(null));
       expect(challenge.failedToday(), equals(false));
     });
 
     test('fields update on date change', () {
-      final challenge = Challenge(challengeName, startDateYesterday);
+      final challenge = Challenge(challengeName, startDateYesterday, null);
       final expectedStats = 'Completed: 1 day\nLongest duration: 0 days';
 
       expect(challenge.daysCompleted(), equals(1));
@@ -39,7 +45,7 @@ void main() {
     });
 
     test('fields update on fail', () {
-      final challenge = Challenge(challengeName, startDateYesterday);
+      final challenge = Challenge(challengeName, startDateYesterday, null);
       final expectedStats = 'Marked as failed!\nLongest duration: 1 day';
 
       challenge.fail();
@@ -55,7 +61,7 @@ void main() {
     });
 
     test('fields update on restart', () {
-      final challenge = Challenge(challengeName, startDateYesterday);
+      final challenge = Challenge(challengeName, startDateYesterday, null);
       final expectedStats = 'Completed: 0 days\nLongest duration: 1 day';
 
       challenge.fail();
@@ -71,7 +77,7 @@ void main() {
     });
 
     test('longestDurationDays not updated on fail when daysCompleted less', () {
-      final challenge = Challenge(challengeName, startDateYesterday);
+      final challenge = Challenge(challengeName, startDateYesterday, null);
       final expectedStats = 'Marked as failed!\nLongest duration: 2 days';
 
       challenge.longestDurationDays = 2;
@@ -82,7 +88,7 @@ void main() {
     });
 
     test('daysCompleted remains at 0 for a failed challenge', () {
-      final challenge = Challenge(challengeName, startDateYesterday);
+      final challenge = Challenge(challengeName, startDateYesterday, null);
       expect(challenge.daysCompleted(), equals(1));
 
       challenge.fail();
@@ -91,7 +97,7 @@ void main() {
     });
 
     test('can map to database representation and back', () {
-      final challenge = Challenge(challengeName, startDateToday);
+      final challenge = Challenge(challengeName, startDateToday, null);
       challenge.id = 1;
 
       final dbMappedChallenge = challenge.toMap();
@@ -123,7 +129,7 @@ void main() {
 
     test('can see a list of challenge dates completed', () {
       final startDateThreeDaysAgo = startDateToday.subtract(Duration(days: 3));
-      final challenge = Challenge(challengeName, startDateThreeDaysAgo);
+      final challenge = Challenge(challengeName, startDateThreeDaysAgo, null);
 
       final expectedDates = [
         startDateToday.subtract(Duration(days: 1)),
