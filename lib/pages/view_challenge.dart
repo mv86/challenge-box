@@ -45,75 +45,78 @@ class _ChallengePageState extends State<ChallengePage> {
         ? widget.challenge.restart
         : widget.challenge.fail;
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 7,
-            child: CalendarCarousel(
-              thisMonthDayBorderColor: Colors.grey,
-              height: 420.0,
-              weekdayTextStyle: TextStyle(color: Colors.blueGrey[200]),
-              weekendTextStyle: TextStyle(color: Colors.black),
-              selectedDateTime: DateTime.now(),
-              selectedDayButtonColor: Colors.grey[600],
-              selectedDayBorderColor: Colors.grey[700],
-              daysHaveCircularBorder: false,
-              markedDatesMap: _markedCompletedDays(
-                  widget.challenge, previousDatesCompleted),
-              markedDateShowIcon: true,
-              markedDateIconMaxShown: 1,
-              markedDateIconBuilder: (event) => event.icon,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Row(
-              children: [
-                _iconExplanation(Colors.green, '  Current Challenge'),
-                Spacer(),
-                _iconExplanation(Colors.green[200], '  Previously Completed'),
-              ],
-            ),
-          ),
-          Spacer(flex: 1),
-          Expanded(
-            flex: 2,
-            child: ButtonBar(
-              alignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                RaisedButton(
-                  key: ValueKey('deleteButton'),
-                  onPressed: () => _confirm(
-                    'Delete',
-                    widget.challenge,
-                    context,
-                    () => widget.challengeConnection.deleteChallenge(
-                      widget.challenge,
-                    ),
-                  ),
-                  child: Text('Delete'),
+    return Scaffold(
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: 380.0,
+              child: CalendarCarousel(
+                thisMonthDayBorderColor: Colors.grey,
+                height: 350.0,
+                width: 320.0,
+                daysTextStyle: TextStyle(color: Colors.grey[300]),
+                weekendTextStyle: TextStyle(color: Colors.grey[300]),
+                weekdayTextStyle: TextStyle(color: Colors.blueGrey[200]),
+                selectedDateTime: DateTime.now(),
+                selectedDayButtonColor: Colors.grey[600],
+                selectedDayBorderColor: Colors.grey[700],
+                daysHaveCircularBorder: false,
+                markedDatesMap: _markedCompletedDays(
+                  widget.challenge,
+                  previousDatesCompleted,
                 ),
-                RaisedButton(
-                  key: ValueKey('${buttonText.toLowerCase()}Button'),
-                  onPressed: widget.challenge.failedToday()
-                      ? null
-                      : () => _confirm(
-                            buttonText,
-                            widget.challenge,
-                            context,
-                            () => _updateChallenge(
-                              widget.challenge,
-                              buttonAction,
-                            ),
-                          ),
-                  child: Text(buttonText),
-                ),
-              ],
+                markedDateShowIcon: true,
+                markedDateIconMaxShown: 1,
+                markedDateIconBuilder: (event) => event.icon,
+              ),
             ),
-          )
-        ],
+            Container(
+              padding: EdgeInsets.only(top: 4.0, bottom: 6.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _iconExplanation(Colors.green, 'Current Challenge'),
+                  _iconExplanation(Colors.green[200], 'Previously Completed'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: ButtonBar(
+          alignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            RaisedButton(
+              key: ValueKey('deleteButton'),
+              onPressed: () => _confirm(
+                'Delete',
+                widget.challenge,
+                context,
+                () => widget.challengeConnection.deleteChallenge(
+                  widget.challenge,
+                ),
+              ),
+              child: Text('Delete'),
+            ),
+            RaisedButton(
+              key: ValueKey('${buttonText.toLowerCase()}Button'),
+              onPressed: widget.challenge.failedToday()
+                  ? null
+                  : () => _confirm(
+                        buttonText,
+                        widget.challenge,
+                        context,
+                        () => _updateChallenge(
+                          widget.challenge,
+                          buttonAction,
+                        ),
+                      ),
+              child: Text(buttonText),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -217,14 +220,17 @@ Widget _iconExplanation(Color color, String text) {
   return Row(
     children: <Widget>[
       Container(
-        width: 35.0,
-        height: 35.0,
+        width: 30.0,
+        height: 30.0,
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
         ),
       ),
-      Text('$text'),
+      Padding(
+        padding: EdgeInsets.only(left: 8.0),
+        child: Text('$text'),
+      ),
     ],
   );
 }

@@ -55,12 +55,15 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
       itemBuilder: (BuildContext context, int index) {
         var challenge = challenges[index];
         return Container(
-          color: (index % 2 == 0) ? Colors.grey[800] : Colors.grey[850],
+          color: (index % 2 == 0)
+              ? Color.fromRGBO(12, 12, 12, 0)
+              : Color.fromRGBO(12, 12, 12, 0.25),
           child: ListTile(
+            leading: challenge.failed
+                ? Icon(Icons.error, color: Colors.red)
+                : Icon(Icons.timer),
             title: Text(challenge.name, style: TextStyle(fontSize: 28.0)),
             subtitle: Text(challenge.stats(), style: TextStyle(fontSize: 18.0)),
-            trailing:
-                challenge.failed ? Icon(Icons.error, color: Colors.red) : null,
             onTap: () => Navigator.of(context).pushNamed(
               AppRoute.challenge,
               arguments: {'challenge': challenge},
