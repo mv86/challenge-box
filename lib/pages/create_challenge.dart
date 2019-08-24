@@ -24,7 +24,7 @@ class CreateChallengePage extends StatefulWidget {
 
 class _CreateChallengePageState extends State<CreateChallengePage> {
   final _formKey = GlobalKey<FormState>();
-  final _dateFormat = DateFormat("dd-MM-yyyy");
+  final _dateFormat = DateFormat("dd/MM/yyyy");
   final _nameController = TextEditingController();
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();

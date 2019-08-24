@@ -1,5 +1,6 @@
 import 'package:challenge_box/db/constants.dart';
 import 'package:challenge_box/utilities.dart';
+import 'package:intl/intl.dart';
 
 class Challenge {
   int id;
@@ -53,6 +54,10 @@ class Challenge {
     return failedDate == _todaysDate();
   }
 
+  bool isTimed() {
+    return endDate != null;
+  }
+
   void fail() {
     if (daysCompleted() > longestDurationDays) {
       longestDurationDays = daysCompleted();
@@ -72,6 +77,17 @@ class Challenge {
   }
 
   String stats() {
+    return isTimed() ? timedChallengeStats() : continuousChallengeStats();
+  }
+
+  String timedChallengeStats() {
+    final daysToGo = endDate.difference(_todaysDate()).inDays;
+    final fomattedEndDate = DateFormat("dd/MM/yyyy").format(endDate);
+    final day = daysToGo == 1 ? 'day' : 'days';
+    return 'Finishes On: $fomattedEndDate\nOnly $daysToGo $day to go';
+  }
+
+  String continuousChallengeStats() {
     String daysCompletedStats;
     String longestDurationDaysStats;
 

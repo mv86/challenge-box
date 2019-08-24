@@ -35,7 +35,23 @@ class ChallengeConnection {
     return null;
   }
 
-  Future<List<Challenge>> queryCurrentChallenges() async {
+  Future<List<Challenge>> queryTimedChallenges() async {
+    return queryCurrentChallenges(
+      whereClause: '$columnEndDate IS NOT NULL',
+      orderByClause: "$columnEndDate",
+    );
+  }
+
+  Future<List<Challenge>> queryContinuousChallenges() async {
+    return queryCurrentChallenges(
+      whereClause: '$columnEndDate IS NULL',
+      orderByClause:
+          "IFNULL($columnStartDate, $dummyFutureDate) ASC, $columnLongestDuration DESC",
+    );
+  }
+
+  Future<List<Challenge>> queryCurrentChallenges(
+      {whereClause, orderByClause}) async {
     Database db = await database;
 
     List<Map> maps = await db.query(
@@ -49,8 +65,8 @@ class ChallengeConnection {
         columnFailedDate,
         columnEndDate
       ],
-      orderBy:
-          "IFNULL($columnStartDate, $dummyFutureDate) ASC, $columnLongestDuration DESC",
+      where: whereClause,
+      orderBy: orderByClause,
     );
 
     List<Challenge> challengeMaps = [];

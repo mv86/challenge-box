@@ -1,6 +1,7 @@
 import 'package:challenge_box/utilities.dart';
 import 'package:test/test.dart';
 import 'package:challenge_box/db/models/challenge.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   group('Challenge', () {
@@ -16,11 +17,11 @@ void main() {
       endDateTomorrow = DateTime.now().add(Duration(days: 1));
     });
 
-    test('can be instantiated', () {
+    test('continuous can be instantiated', () {
       final challenge = Challenge(
         challengeName,
         startDateToday,
-        endDateTomorrow,
+        null,
       );
       final expectedStats = 'Completed: 0 days\nLongest duration: 0 days';
 
@@ -30,9 +31,24 @@ void main() {
       expect(challenge.datesCompleted(), equals([]));
       expect(challenge.longestDurationDays, equals(0));
       expect(challenge.stats(), equals(expectedStats));
-      expect(challenge.endDate, equals(endDateTomorrow));
+      expect(challenge.endDate, equals(null));
       expect(challenge.failedDate, equals(null));
       expect(challenge.failedToday(), equals(false));
+    });
+
+    test('timed can be instantiated', () {
+      final challenge = Challenge(
+        challengeName,
+        startDateToday,
+        endDateTomorrow,
+      );
+      final expectedEndDate = DateFormat("dd/MM/yyyy").format(endDateTomorrow);
+      final expectedStats = 'Finishes On: $expectedEndDate\nOnly 1 day to go';
+
+      expect(challenge.name, equals(challengeName));
+      expect(challenge.startDate, equals(startDateToday));
+      expect(challenge.stats(), equals(expectedStats));
+      expect(challenge.endDate, equals(endDateTomorrow));
     });
 
     test('fields update on date change', () {
