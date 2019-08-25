@@ -1,20 +1,32 @@
 import 'package:challenge_box/db/constants.dart';
 import 'package:challenge_box/utilities.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class Challenge {
+enum ChallengeType {
+  commitment,
+  shortTerm,
+}
+
+abstract class Challenge {
   int id;
   String name;
   DateTime startDate;
-  int longestDurationDays = 0;
-  bool failed = false;
-  DateTime failedDate;
   DateTime endDate;
+  DateTime failedDate;
+  bool failed = false;
+  int longestDurationDays = 0;
 
-  Challenge(this.name, this.startDate, this.endDate);
+  ChallengeType type;
+
+  Challenge({this.name, this.startDate, this.endDate, this.type});
+
+  void restart();
+  String stats();
 
   Challenge.fromMap(Map<String, dynamic> map) {
     id = map[columnId];
+    type = ChallengeType.values[map[columnType]];
     name = map[columnName];
     startDate = toDateTime(map[columnStartDate]);
     longestDurationDays = map[columnLongestDuration];
@@ -25,6 +37,7 @@ class Challenge {
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
+      columnType: type.index,
       columnName: name,
       columnStartDate: toEpochTime(startDate),
       columnLongestDuration: longestDurationDays,
@@ -36,6 +49,20 @@ class Challenge {
       map[columnId] = id;
     }
     return map;
+  }
+
+  void fail() {
+    if (daysCompleted() > longestDurationDays) {
+      longestDurationDays = daysCompleted();
+    }
+    failed = true;
+    failedDate = _todaysDate();
+    startDate = null;
+    endDate = null;
+  }
+
+  bool failedToday() {
+    return failedDate == _todaysDate();
   }
 
   int daysCompleted() {
@@ -50,24 +77,24 @@ class Challenge {
     );
   }
 
-  bool failedToday() {
-    return failedDate == _todaysDate();
-  }
+  DateTime _todaysDate() => toDate(DateTime.now());
 
-  bool isTimed() {
-    return endDate != null;
+  String _dayString(int numberOfDays) {
+    final dayString = numberOfDays == 1 ? 'day' : 'days';
+    return '$numberOfDays $dayString';
   }
+}
 
-  void fail() {
-    if (daysCompleted() > longestDurationDays) {
-      longestDurationDays = daysCompleted();
-    }
-    failed = true;
-    failedDate = _todaysDate();
-    startDate = null;
-  }
+class Commitment extends Challenge {
+  Commitment({name, startDate, type = ChallengeType.commitment})
+      : super(name: name, startDate: startDate, type: type);
 
-  void restart() {
+  Commitment.fromMap(map) : super.fromMap(map);
+
+  IconData icon = Icons.timer_off;
+
+  @override
+  restart() {
     if (daysCompleted() > longestDurationDays) {
       longestDurationDays = daysCompleted();
     }
@@ -76,33 +103,37 @@ class Challenge {
     startDate = _todaysDate();
   }
 
-  String stats() {
-    return isTimed() ? timedChallengeStats() : continuousChallengeStats();
+  @override
+  stats() {
+    final daysCompletedStats = failed
+        ? 'Marked as failed!'
+        : 'Completed: ${_dayString(daysCompleted())}';
+
+    return '$daysCompletedStats\nLongest duration: ${_dayString(longestDurationDays)}';
+  }
+}
+
+class ShortTerm extends Challenge {
+  ShortTerm({name, startDate, endDate, type = ChallengeType.shortTerm})
+      : super(name: name, startDate: startDate, endDate: endDate, type: type);
+
+  ShortTerm.fromMap(map) : super.fromMap(map);
+
+  IconData icon = Icons.timer;
+
+  @override
+  restart() {
+    // TODO Do I want to restart ShortTerm Challenge?
   }
 
-  String timedChallengeStats() {
-    final daysToGo = endDate.difference(_todaysDate()).inDays;
-    final fomattedEndDate = DateFormat("dd/MM/yyyy").format(endDate);
-    final day = daysToGo == 1 ? 'day' : 'days';
-    return 'Finishes On: $fomattedEndDate\nOnly $daysToGo $day to go';
-  }
-
-  String continuousChallengeStats() {
-    String daysCompletedStats;
-    String longestDurationDaysStats;
-
-    if (failed) {
-      daysCompletedStats = 'Marked as failed!';
+  @override
+  stats() {
+    if (endDate != null) {
+      final daysToGo = endDate.difference(_todaysDate()).inDays;
+      final fomattedEndDate = DateFormat("dd/MM/yyyy").format(endDate);
+      return 'Finishes On: $fomattedEndDate\nOnly ${_dayString(daysToGo)} to go';
     } else {
-      daysCompletedStats = 'Completed: ${daysCompleted()} day';
-      if (daysCompleted() != 1) daysCompletedStats += 's';
+      return 'Challenge Failed!';
     }
-
-    longestDurationDaysStats = 'Longest duration: $longestDurationDays day';
-    if (longestDurationDays != 1) longestDurationDaysStats += 's';
-
-    return '$daysCompletedStats\n$longestDurationDaysStats';
   }
-
-  DateTime _todaysDate() => toDate(DateTime.now());
 }

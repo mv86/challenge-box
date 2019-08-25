@@ -4,13 +4,14 @@ final List<String> initScript = [
   '''
   CREATE TABLE $tableChallenges (
     $columnId INTEGER PRIMARY KEY,
+    $columnType INTEGER NOT NULL,
     $columnName TEXT NOT NULL,
     $columnStartDate INTEGER NULL,
     $columnLongestDuration INTEGER NOT NULL DEFAULT 0,
     $columnFailed BIT NOT NULL DEFAULT 0,
     $columnFailedDate INTEGER NULL,
     $columnEndDate INTEGER NULL,
-    CONSTRAINT $uniqueChallengeName UNIQUE ($columnName)
+    CONSTRAINT $uniqueChallengeTypeName UNIQUE ($columnType, $columnName)
   );
   ''',
   '''

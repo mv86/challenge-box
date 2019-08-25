@@ -13,51 +13,36 @@ class ChallengeConnection {
     await db.insert(tableChallenges, challenge.toMap());
   }
 
-  Future<Challenge> queryChallenge(int id) async {
-    Database db = await database;
-    List<Map> maps = await db.query(
-      tableChallenges,
-      columns: [
-        columnId,
-        columnName,
-        columnStartDate,
-        columnLongestDuration,
-        columnFailed,
-        columnFailedDate,
-        columnEndDate
-      ],
-      where: '$columnId = ?',
-      whereArgs: [id],
+  Future<List<Challenge>> queryShortTermChallenges() async {
+    final challenges = await _queryCurrentChallenges(
+      whereClause: '$columnType = ${ChallengeType.shortTerm.index}',
+      orderByClause: "IFNULL($columnEndDate, $dummyFutureDate)",
     );
-    if (maps.length > 0) {
-      return Challenge.fromMap(maps.first);
-    }
-    return null;
+
+    return [...challenges.map((challenge) => ShortTerm.fromMap(challenge))];
   }
 
-  Future<List<Challenge>> queryTimedChallenges() async {
-    return queryCurrentChallenges(
-      whereClause: '$columnEndDate IS NOT NULL',
-      orderByClause: "$columnEndDate",
-    );
-  }
-
-  Future<List<Challenge>> queryContinuousChallenges() async {
-    return queryCurrentChallenges(
-      whereClause: '$columnEndDate IS NULL',
+  Future<List<Challenge>> queryCommitmentChallenges() async {
+    final challenges = await _queryCurrentChallenges(
+      whereClause: '$columnType = ${ChallengeType.commitment.index}',
       orderByClause:
           "IFNULL($columnStartDate, $dummyFutureDate) ASC, $columnLongestDuration DESC",
     );
+
+    return [...challenges.map((challenge) => Commitment.fromMap(challenge))];
   }
 
-  Future<List<Challenge>> queryCurrentChallenges(
-      {whereClause, orderByClause}) async {
+  Future<List<Map>> _queryCurrentChallenges({
+    whereClause,
+    orderByClause,
+  }) async {
     Database db = await database;
 
-    List<Map> maps = await db.query(
+    return await db.query(
       tableChallenges,
       columns: [
         columnId,
+        columnType,
         columnName,
         columnStartDate,
         columnLongestDuration,
@@ -68,12 +53,6 @@ class ChallengeConnection {
       where: whereClause,
       orderBy: orderByClause,
     );
-
-    List<Challenge> challengeMaps = [];
-    for (var map in maps) {
-      challengeMaps.add(Challenge.fromMap(map));
-    }
-    return challengeMaps;
   }
 
   Future<void> updateChallenge(Challenge challenge) async {

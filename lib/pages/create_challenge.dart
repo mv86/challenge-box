@@ -155,12 +155,20 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
 
   _saveChallenge(dbConnection) {
     _formKey.currentState.save();
+    Challenge challenge;
 
-    final challenge = Challenge(
-      _challengeName,
-      toDate(_startDate),
-      toDate(_endDate),
-    );
+    if (_endDate == null) {
+      challenge = Commitment(
+        name: _challengeName,
+        startDate: toDate(_startDate),
+      );
+    } else {
+      challenge = ShortTerm(
+        name: _challengeName,
+        startDate: toDate(_startDate),
+        endDate: toDate(_endDate),
+      );
+    }
 
     dbConnection.insertChallenge(challenge);
 

@@ -31,20 +31,20 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
         bottomNavigationBar: BottomAppBar(
           shape: CircularNotchedRectangle(),
           child: Container(
-            height: 58.0,
+            height: 56.0,
             child: TabBar(
               isScrollable: true,
               tabs: [
                 Tab(
                   child: Text(
-                    'Continuous',
-                    style: TextStyle(fontSize: 22.0),
+                    'Commitment',
+                    style: TextStyle(fontSize: 20.0),
                   ),
                 ),
                 Tab(
                   child: Text(
-                    'Timed',
-                    style: TextStyle(fontSize: 22.0),
+                    'Short-Term',
+                    style: TextStyle(fontSize: 20.0),
                   ),
                 ),
               ],
@@ -55,11 +55,11 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
           children: [
             futureBuilderWrapper(
               child: _currentChallenges,
-              futureAction: widget.dbConnection.queryContinuousChallenges,
+              futureAction: widget.dbConnection.queryCommitmentChallenges,
             ),
             futureBuilderWrapper(
               child: _currentChallenges,
-              futureAction: widget.dbConnection.queryTimedChallenges,
+              futureAction: widget.dbConnection.queryShortTermChallenges,
             ),
           ],
         ),
@@ -82,6 +82,15 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
 
   _currentChallenges(challenges) {
     _currentChallengeNames = [...challenges.map((challenge) => challenge.name)];
+
+    if (challenges.length == 0) {
+      return Center(
+        child: Text(
+          'Please Add A Challenge...',
+          style: TextStyle(fontSize: 24.0),
+        ),
+      );
+    }
 
     return ListView.builder(
       padding: EdgeInsets.all(16.0),
@@ -106,9 +115,7 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
               child: ListTile(
                 leading: challenge.failed
                     ? Icon(Icons.error, color: Colors.red)
-                    : (challenge.isTimed()
-                        ? Icon(Icons.timer)
-                        : Icon(Icons.timer_off)),
+                    : Icon(challenge.icon),
                 title: Text(challenge.name, style: TextStyle(fontSize: 28.0)),
                 subtitle:
                     Text(challenge.stats(), style: TextStyle(fontSize: 18.0)),
