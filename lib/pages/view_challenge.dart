@@ -102,17 +102,18 @@ class _ChallengePageState extends State<ChallengePage> {
             ),
             RaisedButton(
               key: ValueKey('${buttonText.toLowerCase()}Button'),
-              onPressed: widget.challenge.failedToday()
-                  ? null
-                  : () => _confirm(
-                        buttonText,
-                        widget.challenge,
-                        context,
-                        () => _updateChallenge(
-                          widget.challenge,
-                          buttonAction,
-                        ),
-                      ),
+              onPressed:
+                  widget.challenge.failedToday() || widget.challenge.completed()
+                      ? null
+                      : () => _confirm(
+                            buttonText,
+                            widget.challenge,
+                            context,
+                            () => _updateChallenge(
+                              widget.challenge,
+                              buttonAction,
+                            ),
+                          ),
               child: Text(buttonText),
             ),
           ],

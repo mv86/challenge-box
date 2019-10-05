@@ -160,22 +160,28 @@ void main() {
 
   group('Short-Term Challenge', () {
     String challengeName;
-    DateTime twoDaysAgo;
-    DateTime tomorrow;
-    Challenge challenge;
+    DateTime twoDaysAgo, yesterday, today, tomorrow;
 
     setUp(() {
       challengeName = 'test name';
       twoDaysAgo = toDate(DateTime.now().subtract(Duration(days: 2)));
-      tomorrow = DateTime.now().add(Duration(days: 1));
-      challenge = ShortTerm(
+      yesterday = toDate(DateTime.now().subtract(Duration(days: 1)));
+      today = toDate(DateTime.now());
+      tomorrow = toDate(DateTime.now().add(Duration(days: 1)));
+    });
+
+    _createShortTermChallenge({endDate}) {
+      ShortTerm challenge = ShortTerm(
         name: challengeName,
         startDate: twoDaysAgo,
-        endDate: tomorrow,
+        endDate: endDate,
       );
       challenge.id = 1;
-    });
+      return challenge;
+    }
+
     test('can be instantiated', () {
+      final challenge = _createShortTermChallenge(endDate: tomorrow);
       final expectedEndDate = DateFormat("dd/MM/yyyy").format(tomorrow);
       final expectedStats = 'Finishes On: $expectedEndDate\nOnly 1 day to go';
 
@@ -186,13 +192,28 @@ void main() {
       expect(challenge.endDate, equals(tomorrow));
     });
 
+    test('fields update on completion', () {
+      final challenge = _createShortTermChallenge(endDate: yesterday);
+      final expectedStats = 'Challenge Completed!';
+
+      expect(challenge.completed(), equals(true));
+      expect(challenge.stats(), equals(expectedStats));
+    });
+
+    test('is not completed until passed endDate', () {
+      final challenge = _createShortTermChallenge(endDate: today);
+
+      expect(challenge.completed(), equals(false));
+    });
+
     test('fields update on fail', () {
+      final challenge = _createShortTermChallenge(endDate: tomorrow);
       final expectedStats = 'Challenge Failed!';
 
       challenge.fail();
 
       expect(challenge.failed, equals(true));
-      expect(challenge.failedDate, equals(toDate(DateTime.now())));
+      expect(challenge.failedDate, equals(today));
       expect(challenge.startDate, equals(null));
       expect(challenge.endDate, equals(null));
       expect(challenge.daysCompleted(), equals(0));

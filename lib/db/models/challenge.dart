@@ -70,6 +70,10 @@ abstract class Challenge {
     return _todaysDate().difference(startDate).inDays;
   }
 
+  bool completed() {
+    return false;
+  }
+
   List<DateTime> datesCompleted() {
     return List.generate(
       daysCompleted(),
@@ -127,13 +131,20 @@ class ShortTerm extends Challenge {
   }
 
   @override
+  bool completed() {
+    return endDate.difference(_todaysDate()).inDays < 0;
+  }
+
+  @override
   stats() {
-    if (endDate != null) {
+    if (endDate == null) {
+      return 'Challenge Failed!';
+    } else if (completed()) {
+      return 'Challenge Completed!';
+    } else {
       final daysToGo = endDate.difference(_todaysDate()).inDays;
       final fomattedEndDate = DateFormat("dd/MM/yyyy").format(endDate);
       return 'Finishes On: $fomattedEndDate\nOnly ${_dayString(daysToGo)} to go';
-    } else {
-      return 'Challenge Failed!';
     }
   }
 }
