@@ -87,7 +87,7 @@ class _CurrentChallengesPageState extends State<CurrentChallengesPage> {
       return Center(
         child: Text(
           'Please Add A Challenge...',
-          style: TextStyle(fontSize: 24.0),
+          style: TextStyle(fontSize: 22.0),
         ),
       );
     }

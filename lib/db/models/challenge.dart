@@ -27,7 +27,7 @@ abstract class Challenge {
   Challenge.fromMap(Map<String, dynamic> map) {
     id = map[columnId];
     type = ChallengeType.values[map[columnType]];
-    name = map[columnName];
+    name = unescapeApostrophes(map[columnName]);
     startDate = toDateTime(map[columnStartDate]);
     longestDurationDays = map[columnLongestDuration];
     failed = (map[columnFailed] == 0) ? false : true;
@@ -38,7 +38,7 @@ abstract class Challenge {
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       columnType: type.index,
-      columnName: name,
+      columnName: escapeApostrophes(name),
       columnStartDate: toEpochTime(startDate),
       columnLongestDuration: longestDurationDays,
       columnFailed: failed ? 1 : 0,

@@ -15,6 +15,14 @@ DateTime toDateTime(int epochTime) {
   return DateTime.fromMillisecondsSinceEpoch(epochTime);
 }
 
+String escapeApostrophes(String string) {
+  return string.replaceAll(new RegExp("'"), "''");
+}
+
+String unescapeApostrophes(String string) {
+  return string.replaceAll(new RegExp("''"), "'");
+}
+
 Widget futureBuilderWrapper({
   @required Function child,
   @required Function futureAction,

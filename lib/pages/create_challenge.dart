@@ -45,7 +45,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 2.0),
+          padding: const EdgeInsets.fromLTRB(18.0, 4.0, 18.0, 2.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -56,7 +56,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                   decoration: InputDecoration(
                     icon: Icon(Icons.text_format),
                     labelText: 'Challenge Name',
-                    hintText: 'E.g. Do Not Smoke',
+                    hintText: "E.g. Don't Smoke",
                   ),
                   validator: (name) =>
                       _validateName(ReCase(name).titleCase.trim()),
@@ -115,7 +115,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 14.0),
                         child: RaisedButton(
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
@@ -138,12 +138,12 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   }
 
   _validateName(String name) {
-    var nonAlphaNumericRegex = RegExp('[^0-9a-zA-Z ]');
+    var nonAcceptedCharactersRegex = RegExp("[^0-9a-zA-Z ']");
 
     if (name.length < 1) {
       return 'You must choose a challenge name';
     }
-    if (nonAlphaNumericRegex.firstMatch(name) != null) {
+    if (nonAcceptedCharactersRegex.firstMatch(name) != null) {
       return 'Challenge names must be alphanumeric';
     }
     if (widget.currentChallengeNames.contains(name)) {
